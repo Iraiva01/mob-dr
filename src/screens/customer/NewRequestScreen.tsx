@@ -178,25 +178,44 @@ export default function NewRequestScreen() {
     setIsSubmitting(true);
 
     try {
-      // 1. Insert into `public.repair_requests`
-      const { data: requestRow, error: requestError } = await supabase
-        .from('repair_requests')
-        .insert({
-          customer_id: user.id,
+      // 1. Create repair request via `create-repair-request` Edge Function (or DB fallback)
+      let requestId: string | null = null;
+
+      const { data: edgeData, error: edgeError } = await supabase.functions.invoke('create-repair-request', {
+        body: {
           brand: finalBrand,
           device_name: trimmedDeviceName,
           problem_type: finalProblem,
           additional_notes: additionalNotes.trim() || null,
-          status: 'pending',
-        })
-        .select('id')
-        .single();
+        },
+      });
 
-      if (requestError || !requestRow) {
-        throw new Error(requestError?.message || 'Failed to create repair request.');
+      if (!edgeError && edgeData?.data?.id) {
+        requestId = edgeData.data.id;
+      } else {
+        // Fallback to direct database insert
+        const { data: requestRow, error: requestError } = await supabase
+          .from('repair_requests')
+          .insert({
+            customer_id: user.id,
+            brand: finalBrand,
+            device_name: trimmedDeviceName,
+            problem_type: finalProblem,
+            additional_notes: additionalNotes.trim() || null,
+            status: 'pending',
+          })
+          .select('id')
+          .single();
+
+        if (requestError || !requestRow) {
+          throw new Error(requestError?.message || edgeError?.message || 'Failed to create repair request.');
+        }
+        requestId = requestRow.id;
       }
 
-      const requestId = requestRow.id;
+      if (!requestId) {
+        throw new Error('Failed to generate a valid repair request ID.');
+      }
 
       // 2. Upload photos if any were attached
       if (photos.length > 0) {
