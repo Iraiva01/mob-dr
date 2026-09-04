@@ -169,7 +169,11 @@ export default function CustomerHomeScreen() {
    */
   const renderRequestCard = ({ item }: { item: RepairRequest }) => {
     return (
-      <View style={styles.card}>
+      <TouchableOpacity
+        style={styles.card}
+        activeOpacity={0.85}
+        onPress={() => navigation.navigate('RequestDetail', { requestId: item.id })}
+      >
         <View style={styles.cardHeader}>
           {/* Brand Icon Circle */}
           <View style={styles.brandIconContainer}>
@@ -197,7 +201,7 @@ export default function CustomerHomeScreen() {
             Submitted: {formatSubmissionDate(item.created_at)}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 

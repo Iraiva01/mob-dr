@@ -17,6 +17,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { CustomerStackParamList } from '../types';
 import CustomerHomeScreen from '../screens/customer/CustomerHomeScreen';
 import NewRequestScreen from '../screens/customer/NewRequestScreen';
+import RequestDetailScreen from '../screens/customer/RequestDetailScreen';
 
 const Stack = createNativeStackNavigator<CustomerStackParamList>();
 
@@ -37,6 +38,11 @@ export default function CustomerStack() {
         name="NewRequest"
         component={NewRequestScreen}
         options={{ title: 'New Request' }}
+      />
+      <Stack.Screen
+        name="RequestDetail"
+        component={RequestDetailScreen}
+        options={{ title: 'Request Details' }}
       />
     </Stack.Navigator>
   );

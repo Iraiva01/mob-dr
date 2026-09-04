@@ -101,3 +101,46 @@ export async function uploadRepairPhoto(
     photoRowId: insertedRow.id,
   };
 }
+
+/**
+ * Generate a short-lived signed URL for a photo stored in the private `repair-photos` bucket.
+ * Per the `photo-upload-flow` skill, photos are kept private and accessed via signed URLs
+ * (default: 3600 seconds / 1 hour).
+ *
+ * @param filePath The storage path (e.g. "requestId/photoId.jpg") or legacy URL.
+ * @param expiresIn Time in seconds before the signed URL expires (default: 3600).
+ */
+export async function getSignedPhotoUrl(filePath: string, expiresIn = 3600): Promise<string> {
+  // If the path contains the full URL or bucket prefix, strip it down to the relative object path
+  const relativePath = filePath
+    .replace(/^.*repair-photos\//, '')
+    .replace(/^\/+/, '');
+
+  const { data, error } = await supabase.storage
+    .from('repair-photos')
+    .createSignedUrl(relativePath, expiresIn);
+
+  if (error) {
+    console.error('Error generating signed URL for:', relativePath, error.message);
+    throw new Error(`Failed to generate signed URL: ${error.message}`);
+  }
+
+  return data.signedUrl;
+}
+
+/**
+ * Batch generate signed URLs for an array of photo file paths.
+ */
+export async function getSignedPhotoUrls(filePaths: string[], expiresIn = 3600): Promise<string[]> {
+  const promises = filePaths.map(async (path) => {
+    try {
+      return await getSignedPhotoUrl(path, expiresIn);
+    } catch {
+      return '';
+    }
+  });
+
+  const urls = await Promise.all(promises);
+  return urls.filter((url) => Boolean(url));
+}
+
