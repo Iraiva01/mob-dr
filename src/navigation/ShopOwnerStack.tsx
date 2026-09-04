@@ -16,6 +16,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ShopOwnerStackParamList } from '../types';
 import IncomingRequestsScreen from '../screens/shop_owner/IncomingRequestsScreen';
+import OwnerRequestDetailScreen from '../screens/shop_owner/OwnerRequestDetailScreen';
 
 const Stack = createNativeStackNavigator<ShopOwnerStackParamList>();
 
@@ -31,6 +32,11 @@ export default function ShopOwnerStack() {
         name="ShopOwnerHome"
         component={IncomingRequestsScreen}
         options={{ title: 'Incoming Requests' }}
+      />
+      <Stack.Screen
+        name="OwnerRequestDetail"
+        component={OwnerRequestDetailScreen}
+        options={{ title: 'Request Detail' }}
       />
     </Stack.Navigator>
   );
