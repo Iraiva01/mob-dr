@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Repair Shop - Incoming Requests</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@700;800&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#626262",
+                        "error-red": "#EF4444",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "surface-container": "#eeeeee",
+                        "inverse-primary": "#c6c6c6",
+                        "on-primary-container": "#848484",
+                        "surface-container-high": "#e8e8e8",
+                        "outline-variant": "#cfc4c5",
+                        "on-surface-variant": "#4c4546",
+                        "on-primary-fixed-variant": "#474747",
+                        "secondary-fixed": "#e4e2e2",
+                        "surface-bright": "#f9f9f9",
+                        "tertiary": "#000000",
+                        "surface": "#F9F9F9",
+                        "on-surface": "#1b1b1b",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "background": "#FFFFFF",
+                        "tertiary-container": "#1a1c1c",
+                        "surface-dim": "#dadada",
+                        "primary-container": "#1b1b1b",
+                        "inverse-surface": "#303030",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "secondary": "#5e5e5e",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#1b1b1b",
+                        "surface-tint": "#5e5e5e",
+                        "surface-container-low": "#f3f3f3",
+                        "primary-fixed": "#e2e2e2",
+                        "secondary-container": "#e1dfdf",
+                        "on-secondary-fixed-variant": "#464747",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "on-background": "#1b1b1b",
+                        "on-error-container": "#93000a",
+                        "outline": "#7e7576",
+                        "success-green": "#22C55E",
+                        "primary": "#000000",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e2e2e2",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#c6c6c6",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#e2e2e2",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-tertiary-container": "#838484",
+                        "secondary-fixed-dim": "#c7c6c6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "48px",
+                        "stack-sm": "12px",
+                        "stack-md": "24px",
+                        "margin-desktop": "40px",
+                        "gutter": "16px",
+                        "margin-mobile": "20px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-xl": ["Hanken Grotesk"],
+                        "label-md": ["JetBrains Mono"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "30px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Ambient highly diffused shadow from Style Guidance */
+        .shadow-ambient {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        /* Custom scrollbar hiding for cleaner minimal look */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-primary font-body-md antialiased selection:bg-surface-container-high selection:text-primary">
+<div class="max-w-[600px] mx-auto min-h-screen relative pb-[80px]">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-background dark:bg-background flex justify-between items-center px-margin-mobile py-4 max-w-[600px] mx-auto transition-all duration-200 ease-in-out">
+<button aria-label="Menu" class="hover:opacity-80 transition-opacity flex items-center justify-center p-2 -ml-2 rounded-full active:bg-surface-container-low">
+<span class="material-symbols-outlined text-primary dark:text-primary">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile tracking-tighter text-primary dark:text-primary">
+                RepairLink
+            </h1>
+<button aria-label="User Profile" class="hover:opacity-80 transition-opacity">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high ring-1 ring-surface-container-highest">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional, minimalist headshot of a young repair technician in a well-lit studio. They are looking directly at the camera with a confident, approachable expression. The lighting is bright and even, highlighting their features against a stark, bright white background. The overall aesthetic is modern, clean, and extremely high-quality, fitting a premium service app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUHsswN_VKt-o7Bnwl49hHMHxMCWSjHkJWI-8orlZkJlk2N9nANXT6OmSkfQdQq7DK82Tyg_PYQNnEUcYHqcg8dzxxfGfw14c0IWfAnVbzAfjwXVvr46X5wYwVuot9CQICo6pgY5cvBYa2bjfkKeYp2TUzdLOmhoOceuDQuWpNvJPS9Q5vViXmqTFPilTaYcwkwiJ1njCjiDSicI7a3qMs0O6p8e1YZmHaQPirX2f3Z-RtvVJ1C3_L4w"/>
+</div>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="px-margin-mobile pt-stack-sm pb-stack-lg flex flex-col gap-stack-md">
+<!-- Page Header: Intent-focused clarity -->
+<div class="flex justify-between items-end mb-base">
+<h2 class="font-headline-xl text-headline-xl text-primary tracking-tight">
+                    Incoming<br/>Requests
+                </h2>
+<!-- Status Badge: Pending (white fill, black border) -->
+<div class="mb-2 px-3 py-1 rounded-full border border-primary bg-background flex items-center gap-1.5 shadow-sm">
+<div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label-md text-label-md text-primary uppercase">12 Pending</span>
+</div>
+</div>
+<!-- List of Request Cards (The Stacks) -->
+<div class="flex flex-col gap-stack-md">
+<!-- Card 1 -->
+<div class="bg-background rounded-lg p-gutter shadow-ambient flex gap-gutter items-center relative group hover:shadow-md transition-shadow duration-300 cursor-pointer">
+<!-- Submission Time -->
+<span class="absolute top-4 right-4 font-label-md text-label-md text-secondary">2m ago</span>
+<!-- Thumbnail -->
+<div class="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-surface-container-low flex items-center justify-center">
+<img alt="Damaged device photo" class="w-full h-full object-cover" data-alt="A top-down view of a severely damaged modern smartphone resting on a pure, spotless white surface. The back glass is extensively shattered into a complex web of cracks, radiating from the top right corner near the camera module. The lighting is crisp, cold, and highly directional, casting subtle, diffuse shadows that emphasize the texture of the broken glass. The mood is clinical and objective, focusing entirely on the technical damage." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8yYc7QVwrRoViOUAY0_pAByeWMlGw-V-RIjdgTUcP_OTyEl4DnFkBzYaFDjDX_Chcge5xTTQyijmDrdO0U2Qnro-P4je5OChBJEzQIMT6Us8THyVs0Ke-Ewo8Ta-i-IoNdMT1Bus6_QBdJ9biGZV4cc1Ie0bmgANmcAZ_sqO3Mpwbv1lfd5r3KLhjTBqiT0witdTlkqBGS8iZC9NGFSPu6xjVEdCtyCAHvIb8nuEHKN1-_ucjji-wJA"/>
+</div>
+<!-- Details Stack -->
+<div class="flex-1 min-w-0 flex flex-col gap-1 pr-12">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">smartphone</span>
+<span class="font-body-lg text-body-lg text-primary truncate font-bold">iPhone 14 Pro Max</span>
+</div>
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[16px]">broken_image</span>
+<span class="font-body-md text-body-md truncate">Shattered back glass &amp; camera</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-background rounded-lg p-gutter shadow-ambient flex gap-gutter items-center relative group hover:shadow-md transition-shadow duration-300 cursor-pointer">
+<span class="absolute top-4 right-4 font-label-md text-label-md text-secondary">15m ago</span>
+<div class="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-surface-container-low flex items-center justify-center">
+<img alt="Damaged device photo" class="w-full h-full object-cover" data-alt="A close-up shot of a modern, sleek silver laptop with a noticeably swollen battery casing underneath, causing the keyboard deck to bulge slightly upwards. The device is placed on a pristine white minimalist table. The lighting is perfectly balanced studio illumination, creating soft highlights on the aluminum chassis that draw attention to the deformity. The image is highly detailed, emphasizing the physical distortion of the hardware in a high-tech repair context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCi_-Fdh5PYKT_NY7yYCKO8A9ZdiUvjg9BGkyTeQ48nJTPNzI8ex3Q_35NTc_zg1HNLW3aJQHtOIquovTRRF9X9EK5WFK_BCWQ2XSE9XWgFMkuS9mR5j-xhuJRvE13j_72Gv7AdvW1hpKQfxezrLS9HQRAOn0wfrNlAAiwjea7kqfAZafA1QrTjyHMmcXmFmthWXBkL2G0A-PPjHoQYpObgPcSZBCMlGsw0bgtQcCIDmqpQU67jgqh1Uw"/>
+</div>
+<div class="flex-1 min-w-0 flex flex-col gap-1 pr-12">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">laptop_mac</span>
+<span class="font-body-lg text-body-lg text-primary truncate font-bold">MacBook Pro 16"</span>
+</div>
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[16px]">battery_alert</span>
+<span class="font-body-md text-body-md truncate">Battery swollen, keyboard lifting</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-background rounded-lg p-gutter shadow-ambient flex gap-gutter items-center relative group hover:shadow-md transition-shadow duration-300 cursor-pointer">
+<span class="absolute top-4 right-4 font-label-md text-label-md text-secondary">1h ago</span>
+<div class="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-surface-container-low flex items-center justify-center">
+<img alt="Damaged device photo" class="w-full h-full object-cover" data-alt="A high-resolution image of a premium tablet device with a deeply scratched and unresponsive screen, lying flat on a minimalist white backdrop. The screen reflects a harsh, singular light source above, which sharply highlights the extensive scratch marks crisscrossing the display surface. The surrounding environment is completely devoid of distraction, enforcing a clean, modern aesthetic. The focus is starkly on the compromised integrity of the device interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_RCUCUsfPdbvHrd3geraaobFODlrIKB-l8wk097N-FqdhstPW1XEMet-fs6hQ0cX827z-PZ40ycPmztL5yj6waW1ifPJu4HZFy0ySQ-pWjzogixAWAaDUkUnEwMliaIKca9dbeGn4jN0rlxIVvy0kdJQ3S5iV2bHVxRDt98wccKJuqDyG4Uoo4wQZKdxlReF5FplOHLGS3tRgQtC9DLkMU3rslLKlJR-FUVmRd1UAbWrwUi_ai3yVHA"/>
+</div>
+<div class="flex-1 min-w-0 flex flex-col gap-1 pr-12">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">tablet_mac</span>
+<span class="font-body-lg text-body-lg text-primary truncate font-bold">iPad Air (5th Gen)</span>
+</div>
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[16px]">touch_app</span>
+<span class="font-body-md text-body-md truncate">Digitizer unresponsive on right side</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-background rounded-lg p-gutter shadow-ambient flex gap-gutter items-center relative group hover:shadow-md transition-shadow duration-300 cursor-pointer">
+<span class="absolute top-4 right-4 font-label-md text-label-md text-secondary">3h ago</span>
+<div class="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[32px]">videogame_asset</span>
+</div>
+<div class="flex-1 min-w-0 flex flex-col gap-1 pr-12">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">videogame_asset</span>
+<span class="font-body-lg text-body-lg text-primary truncate font-bold">Nintendo Switch OLED</span>
+</div>
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[16px]">gamepad</span>
+<span class="font-body-md text-body-md truncate">Joy-Con drift (Left)</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 bg-background border-t border-surface-container shadow-sm z-50 md:hidden max-w-[600px] left-1/2 -translate-x-1/2">
+<!-- Requests (Active Tab) -->
+<button class="flex flex-col items-center justify-center text-primary dark:text-primary scale-110 active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">build_circle</span>
+<span class="font-label-md text-label-md mt-1">Requests</span>
+</button>
+<!-- Devices -->
+<button class="flex flex-col items-center justify-center text-secondary dark:text-secondary hover:text-primary dark:hover:text-primary transition-colors">
+<span class="material-symbols-outlined">devices</span>
+<span class="font-label-md text-label-md mt-1">Devices</span>
+</button>
+<!-- Updates -->
+<button class="flex flex-col items-center justify-center text-secondary dark:text-secondary hover:text-primary dark:hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-label-md text-label-md mt-1">Updates</span>
+<!-- Notification Dot -->
+<div class="absolute top-0 right-3 w-2 h-2 rounded-full bg-primary border-2 border-background"></div>
+</button>
+<!-- Profile -->
+<button class="flex flex-col items-center justify-center text-secondary dark:text-secondary hover:text-primary dark:hover:text-primary transition-colors">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md mt-1">Profile</span>
+</button>
+</nav>
+</div>
+</body></html>

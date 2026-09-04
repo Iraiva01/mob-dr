@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Precision Repair</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@700;800&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error-container": "#93000a",
+                      "on-surface-variant": "#4c4546",
+                      "on-error": "#ffffff",
+                      "surface-bright": "#f9f9f9",
+                      "on-secondary-fixed-variant": "#464747",
+                      "on-tertiary-container": "#838484",
+                      "tertiary": "#000000",
+                      "on-primary": "#ffffff",
+                      "on-secondary-container": "#626262",
+                      "primary-fixed": "#e2e2e2",
+                      "background": "#FFFFFF",
+                      "on-surface": "#1b1b1b",
+                      "surface-variant": "#e2e2e2",
+                      "surface": "#F9F9F9",
+                      "primary-container": "#1b1b1b",
+                      "on-primary-fixed-variant": "#474747",
+                      "tertiary-fixed-dim": "#c6c6c6",
+                      "secondary-container": "#e1dfdf",
+                      "surface-dim": "#dadada",
+                      "on-secondary-fixed": "#1b1c1c",
+                      "primary": "#000000",
+                      "on-tertiary-fixed-variant": "#454747",
+                      "secondary": "#5e5e5e",
+                      "secondary-fixed-dim": "#c7c6c6",
+                      "success-green": "#22C55E",
+                      "inverse-surface": "#303030",
+                      "outline": "#7e7576",
+                      "surface-container": "#eeeeee",
+                      "primary-fixed-dim": "#c6c6c6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed": "#e2e2e2",
+                      "on-tertiary-fixed": "#1a1c1c",
+                      "surface-container-highest": "#e2e2e2",
+                      "surface-tint": "#5e5e5e",
+                      "error-red": "#EF4444",
+                      "error": "#ba1a1a",
+                      "on-primary-container": "#848484",
+                      "surface-container-low": "#f3f3f3",
+                      "on-background": "#1b1b1b",
+                      "secondary-fixed": "#e4e2e2",
+                      "on-primary-fixed": "#1b1b1b",
+                      "on-tertiary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "surface-container-high": "#e8e8e8",
+                      "inverse-primary": "#c6c6c6",
+                      "tertiary-container": "#1a1c1c",
+                      "outline-variant": "#cfc4c5",
+                      "inverse-on-surface": "#f1f1f1"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "margin-mobile": "20px",
+                      "margin-desktop": "40px",
+                      "base": "8px",
+                      "stack-lg": "48px",
+                      "stack-sm": "12px",
+                      "stack-md": "24px"
+              },
+              "fontFamily": {
+                      "headline-xl": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-md": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg-mobile": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "headline-xl": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "30px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        .ambient-shadow {
+            box-shadow: 0px 4px 20px rgba(0,0,0,0.05);
+        }
+        .fab-shadow {
+            box-shadow: 0px 8px 24px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-background text-primary font-body-md antialiased min-h-screen pb-[80px]">
+<!-- TopAppBar from JSON -->
+<header class="w-full top-0 sticky bg-background dark:bg-background z-40">
+<div class="flex justify-between items-center px-margin-mobile py-4 max-w-[600px] mx-auto transition-all duration-200 ease-in-out">
+<button class="text-primary dark:text-primary hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" style="font-size: 28px;">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile tracking-tighter text-primary dark:text-primary">RepairLink</h1>
+<button class="text-primary dark:text-primary hover:opacity-80 transition-opacity overflow-hidden rounded-full w-8 h-8 bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="px-margin-mobile pt-stack-sm pb-stack-lg max-w-[600px] mx-auto">
+<!-- Page Title -->
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-stack-md">My Repairs</h2>
+<!-- Cards List -->
+<div class="space-y-stack-md">
+<!-- Card 1: In Progress -->
+<div class="bg-background rounded-lg ambient-shadow p-gutter flex items-center gap-gutter transition-transform hover:-translate-y-1 duration-200">
+<div class="w-16 h-16 rounded-lg bg-surface flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, studio-lit front view of a modern flagship smartphone with a cracked screen, resting on a pure white surface. High contrast, minimalist light-mode aesthetic, subtle drop shadow. Shot directly from above." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8bL62-FzDiKPFBbIIxpVXdOmL2qArZ7OZa0oinRlEpmFsVxMU5b7W28evagsx3fCjjkZ2-skfuuQ_T8JwFdlUzmeIiRAiNxxvxCXqj2dsBnR4OH_4Rd0Mv4qvQYrRgIw1gXaEGJg0iItdGg3pKnd5HVvxmKna39yEJsdyTHABH3W7W5SMQ8vMFEv5sMNhXB5M9HAj7pn65bYeHnSvtuF5nKw44ly0VISuHyAFQv7O1kp6q3GXd2pRFw"/>
+</div>
+<div class="flex-grow flex flex-col justify-center">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-body-lg text-body-lg text-primary">iPhone 13 Pro</h3>
+<span class="bg-primary text-on-primary font-label-md text-label-md px-3 py-1 rounded-full">In Progress</span>
+</div>
+<p class="font-body-md text-body-md text-secondary">Screen Replacement</p>
+<p class="font-label-md text-label-md text-secondary mt-2 opacity-70">Submitted: Oct 24, 2023</p>
+</div>
+</div>
+<!-- Card 2: Completed -->
+<div class="bg-background rounded-lg ambient-shadow p-gutter flex items-center gap-gutter transition-transform hover:-translate-y-1 duration-200">
+<div class="w-16 h-16 rounded-lg bg-surface flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A flawless, studio-lit front view of a pristine modern Android smartphone resting on a pure white surface. High contrast, minimalist light-mode aesthetic, subtle drop shadow. Shot directly from above, showing zero damage." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVS2WLk3YxnPbHgAkgE-i4wIVnvrvSPaVpCgmEUJwMSIQjiXl9Iohd_Xt2cwwb-zTEKEQeuXlaV-9vc-U0nbNdF-yOoKBjeDLoyzI53a0R6i9Abi8X4Kc3FBTjGuPBxo9FkaKYPKIT0moO2MZ0wocU0Q8tM9o4ViOIVbiZ33fjzcF43o0Z4xSUm7wIkLMyc6YZGFSH1t-KwctNDbpmCHqRWD_Vy7S-GkZbxt5lJBIDZKsnNTJL56oXCw"/>
+</div>
+<div class="flex-grow flex flex-col justify-center">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-body-lg text-body-lg text-primary">Galaxy S22</h3>
+<span class="bg-background text-primary border border-primary font-label-md text-label-md px-3 py-1 rounded-full">Completed</span>
+</div>
+<p class="font-body-md text-body-md text-secondary">Battery Swap</p>
+<p class="font-label-md text-label-md text-secondary mt-2 opacity-70">Submitted: Oct 12, 2023</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-[90px] right-margin-mobile w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center fab-shadow hover:scale-105 transition-transform duration-200 z-40 max-w-[600px] mx-auto md:right-[calc(50%-300px+20px)]">
+<span class="material-symbols-outlined" style="font-weight: 300; font-size: 28px;">add</span>
+</button>
+<!-- BottomNavBar from JSON -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 bg-background z-50 md:hidden pb-safe">
+<!-- Active Tab: Requests -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary scale-110 transition-transform duration-150 group" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">build_circle</span>
+<span class="font-label-md text-label-md mt-1 opacity-100 transition-opacity">Requests</span>
+</a>
+<!-- Inactive Tab: Devices -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary hover:text-primary dark:hover:text-primary transition-colors duration-150 group" href="#">
+<span class="material-symbols-outlined group-active:scale-95 transition-transform duration-150">devices</span>
+<span class="font-label-md text-label-md mt-1 opacity-70 group-hover:opacity-100 transition-opacity">Devices</span>
+</a>
+<!-- Inactive Tab: Updates -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary hover:text-primary dark:hover:text-primary transition-colors duration-150 group" href="#">
+<span class="material-symbols-outlined group-active:scale-95 transition-transform duration-150">notifications</span>
+<span class="font-label-md text-label-md mt-1 opacity-70 group-hover:opacity-100 transition-opacity">Updates</span>
+</a>
+<!-- Inactive Tab: Profile -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary hover:text-primary dark:hover:text-primary transition-colors duration-150 group" href="#">
+<span class="material-symbols-outlined group-active:scale-95 transition-transform duration-150">person</span>
+<span class="font-label-md text-label-md mt-1 opacity-70 group-hover:opacity-100 transition-opacity">Profile</span>
+</a>
+</nav>
+<style>
+        /* Safe area support for modern mobile browsers */
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 12px);
+        }
+    </style>
+</body></html>

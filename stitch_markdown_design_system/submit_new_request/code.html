@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Submit New Request</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@700;800&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error-container": "#93000a",
+                      "on-surface-variant": "#4c4546",
+                      "on-error": "#ffffff",
+                      "surface-bright": "#f9f9f9",
+                      "on-secondary-fixed-variant": "#464747",
+                      "on-tertiary-container": "#838484",
+                      "tertiary": "#000000",
+                      "on-primary": "#ffffff",
+                      "on-secondary-container": "#626262",
+                      "primary-fixed": "#e2e2e2",
+                      "background": "#FFFFFF",
+                      "on-surface": "#1b1b1b",
+                      "surface-variant": "#e2e2e2",
+                      "surface": "#F9F9F9",
+                      "primary-container": "#1b1b1b",
+                      "on-primary-fixed-variant": "#474747",
+                      "tertiary-fixed-dim": "#c6c6c6",
+                      "secondary-container": "#e1dfdf",
+                      "surface-dim": "#dadada",
+                      "on-secondary-fixed": "#1b1c1c",
+                      "primary": "#000000",
+                      "on-tertiary-fixed-variant": "#454747",
+                      "secondary": "#5e5e5e",
+                      "secondary-fixed-dim": "#c7c6c6",
+                      "success-green": "#22C55E",
+                      "inverse-surface": "#303030",
+                      "outline": "#7e7576",
+                      "surface-container": "#eeeeee",
+                      "primary-fixed-dim": "#c6c6c6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed": "#e2e2e2",
+                      "on-tertiary-fixed": "#1a1c1c",
+                      "surface-container-highest": "#e2e2e2",
+                      "surface-tint": "#5e5e5e",
+                      "error-red": "#EF4444",
+                      "error": "#ba1a1a",
+                      "on-primary-container": "#848484",
+                      "surface-container-low": "#f3f3f3",
+                      "on-background": "#1b1b1b",
+                      "secondary-fixed": "#e4e2e2",
+                      "on-primary-fixed": "#1b1b1b",
+                      "on-tertiary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "surface-container-high": "#e8e8e8",
+                      "inverse-primary": "#c6c6c6",
+                      "tertiary-container": "#1a1c1c",
+                      "outline-variant": "#cfc4c5",
+                      "inverse-on-surface": "#f1f1f1"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "margin-mobile": "20px",
+                      "margin-desktop": "40px",
+                      "base": "8px",
+                      "stack-lg": "48px",
+                      "stack-sm": "12px",
+                      "stack-md": "24px"
+              },
+              "fontFamily": {
+                      "headline-xl": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-md": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg-mobile": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "headline-xl": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "30px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        /* Hide scrollbar for brand slider but keep functionality */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- TopAppBar (Transactional - Hidden Navigation Elements) -->
+<header class="w-full top-0 sticky bg-background text-primary transition-all duration-200 ease-in-out flex justify-between items-center px-margin-mobile py-4 max-w-[600px] mx-auto z-50 bg-opacity-95 backdrop-blur-sm">
+<button aria-label="Go Back" class="text-primary hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" style="font-size: 24px;">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile tracking-tighter text-primary">RepairLink</h1>
+<div class="w-6"></div> <!-- Spacer for centering -->
+</header>
+<main class="max-w-[600px] mx-auto px-margin-mobile pb-[100px]">
+<!-- Page Title -->
+<div class="mt-stack-sm mb-stack-lg">
+<h2 class="font-headline-xl text-headline-xl text-primary">New Request</h2>
+<p class="font-body-md text-body-md text-secondary mt-2">Provide details about your device to get started.</p>
+</div>
+<!-- Step 1: Brand Selection -->
+<section class="mb-stack-lg">
+<h3 class="font-headline-md text-headline-md text-primary mb-stack-sm">1. Select Brand</h3>
+<div class="flex overflow-x-auto gap-4 hide-scrollbar py-2 -mx-margin-mobile px-margin-mobile">
+<!-- Selected Brand -->
+<button class="flex flex-col items-center justify-center w-[80px] min-w-[80px] h-[80px] rounded-full bg-primary text-on-primary shadow-sm flex-shrink-0 transition-transform active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">phone_iphone</span>
+<span class="font-label-md text-label-md mt-1">Apple</span>
+</button>
+<!-- Unselected Brands -->
+<button class="flex flex-col items-center justify-center w-[80px] min-w-[80px] h-[80px] rounded-full bg-surface text-on-surface shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant flex-shrink-0 transition-transform active:scale-95 hover:bg-surface-container">
+<span class="material-symbols-outlined">smartphone</span>
+<span class="font-label-md text-label-md mt-1">Samsung</span>
+</button>
+<button class="flex flex-col items-center justify-center w-[80px] min-w-[80px] h-[80px] rounded-full bg-surface text-on-surface shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant flex-shrink-0 transition-transform active:scale-95 hover:bg-surface-container">
+<span class="material-symbols-outlined">phone_android</span>
+<span class="font-label-md text-label-md mt-1">OnePlus</span>
+</button>
+<button class="flex flex-col items-center justify-center w-[80px] min-w-[80px] h-[80px] rounded-full bg-surface text-on-surface shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant flex-shrink-0 transition-transform active:scale-95 hover:bg-surface-container">
+<span class="material-symbols-outlined">aod</span>
+<span class="font-label-md text-label-md mt-1">Xiaomi</span>
+</button>
+<button class="flex flex-col items-center justify-center w-[80px] min-w-[80px] h-[80px] rounded-full bg-surface text-on-surface shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant flex-shrink-0 transition-transform active:scale-95 hover:bg-surface-container">
+<span class="material-symbols-outlined">devices</span>
+<span class="font-label-md text-label-md mt-1">Other</span>
+</button>
+</div>
+</section>
+<!-- Step 2: Problem Selection -->
+<section class="mb-stack-lg">
+<h3 class="font-headline-md text-headline-md text-primary mb-stack-sm">2. Select Issue</h3>
+<div class="grid grid-cols-2 gap-4">
+<!-- Selected Issue -->
+<button class="flex flex-col items-center justify-center p-4 rounded-lg bg-background border-2 border-primary shadow-sm transition-transform active:scale-95 h-32 aspect-square w-full">
+<span class="material-symbols-outlined text-primary mb-2" style="font-size: 32px;">broken_image</span>
+<span class="font-body-md text-body-md text-primary font-medium text-center">Cracked Screen</span>
+</button>
+<!-- Unselected Issues -->
+<button class="flex flex-col items-center justify-center p-4 rounded-lg bg-surface text-secondary border border-transparent shadow-[0px_4px_20px_rgba(0,0,0,0.05)] transition-transform active:scale-95 hover:bg-surface-container h-32 aspect-square w-full">
+<span class="material-symbols-outlined mb-2" style="font-size: 32px;">battery_alert</span>
+<span class="font-body-md text-body-md text-center">Battery</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-lg bg-surface text-secondary border border-transparent shadow-[0px_4px_20px_rgba(0,0,0,0.05)] transition-transform active:scale-95 hover:bg-surface-container h-32 aspect-square w-full">
+<span class="material-symbols-outlined mb-2" style="font-size: 32px;">water_drop</span>
+<span class="font-body-md text-body-md text-center">Water Damage</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-lg bg-surface text-secondary border border-transparent shadow-[0px_4px_20px_rgba(0,0,0,0.05)] transition-transform active:scale-95 hover:bg-surface-container h-32 aspect-square w-full">
+<span class="material-symbols-outlined mb-2" style="font-size: 32px;">volume_off</span>
+<span class="font-body-md text-body-md text-center">Speaker</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-lg bg-surface text-secondary border border-transparent shadow-[0px_4px_20px_rgba(0,0,0,0.05)] transition-transform active:scale-95 hover:bg-surface-container h-32 aspect-square w-full">
+<span class="material-symbols-outlined mb-2" style="font-size: 32px;">cable</span>
+<span class="font-body-md text-body-md text-center">Charging Port</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-lg bg-surface text-secondary border border-transparent shadow-[0px_4px_20px_rgba(0,0,0,0.05)] transition-transform active:scale-95 hover:bg-surface-container h-32 aspect-square w-full">
+<span class="material-symbols-outlined mb-2" style="font-size: 32px;">help</span>
+<span class="font-body-md text-body-md text-center">Other</span>
+</button>
+</div>
+</section>
+<!-- Step 3: Photo Upload -->
+<section class="mb-stack-lg">
+<h3 class="font-headline-md text-headline-md text-primary mb-stack-sm">3. Upload Photo (Optional)</h3>
+<button class="w-full flex flex-col items-center justify-center py-stack-md rounded-lg border-2 border-dashed border-tertiary bg-surface-bright text-secondary hover:bg-surface-container transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+<span class="material-symbols-outlined mb-2 text-primary" style="font-size: 32px;">photo_camera</span>
+<span class="font-body-md text-body-md">Tap to take or select a photo</span>
+</button>
+</section>
+<!-- Step 4: Additional Notes -->
+<section class="mb-stack-lg">
+<h3 class="font-headline-md text-headline-md text-primary mb-stack-sm">4. Additional Notes</h3>
+<textarea class="w-full bg-transparent border-0 border-b border-tertiary text-on-surface font-body-md text-body-md focus:ring-0 focus:border-b-2 px-0 py-2 resize-none placeholder:text-secondary-fixed-dim" placeholder="Describe the issue in more detail..." rows="3"></textarea>
+</section>
+</main>
+<!-- Bottom Action Button -->
+<div class="fixed bottom-0 left-0 w-full p-margin-mobile bg-background bg-opacity-95 backdrop-blur-sm z-50">
+<div class="max-w-[600px] mx-auto">
+<button class="w-full h-[56px] bg-primary text-on-primary font-body-lg text-body-lg rounded-lg shadow-md hover:bg-inverse-surface transition-colors active:scale-[0.98]">
+                Submit Request
+            </button>
+</div>
+</div>
+</body></html>

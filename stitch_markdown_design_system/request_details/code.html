@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Request Detail - RepairLink</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700;800&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#4c4546",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f9f9f9",
+                        "on-secondary-fixed-variant": "#464747",
+                        "on-tertiary-container": "#838484",
+                        "tertiary": "#000000",
+                        "on-primary": "#ffffff",
+                        "on-secondary-container": "#626262",
+                        "primary-fixed": "#e2e2e2",
+                        "background": "#FFFFFF",
+                        "on-surface": "#1b1b1b",
+                        "surface-variant": "#e2e2e2",
+                        "surface": "#F9F9F9",
+                        "primary-container": "#1b1b1b",
+                        "on-primary-fixed-variant": "#474747",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "secondary-container": "#e1dfdf",
+                        "surface-dim": "#dadada",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "primary": "#000000",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "secondary": "#5e5e5e",
+                        "secondary-fixed-dim": "#c7c6c6",
+                        "success-green": "#22C55E",
+                        "inverse-surface": "#303030",
+                        "outline": "#7e7576",
+                        "surface-container": "#eeeeee",
+                        "primary-fixed-dim": "#c6c6c6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "surface-container-highest": "#e2e2e2",
+                        "surface-tint": "#5e5e5e",
+                        "error-red": "#EF4444",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#848484",
+                        "surface-container-low": "#f3f3f3",
+                        "on-background": "#1b1b1b",
+                        "secondary-fixed": "#e4e2e2",
+                        "on-primary-fixed": "#1b1b1b",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e8e8e8",
+                        "inverse-primary": "#c6c6c6",
+                        "tertiary-container": "#1a1c1c",
+                        "outline-variant": "#cfc4c5",
+                        "inverse-on-surface": "#f1f1f1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "40px",
+                        "base": "8px",
+                        "stack-lg": "48px",
+                        "stack-sm": "12px",
+                        "stack-md": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-md": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "30px", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-primary font-body-md antialiased md:bg-surface-container">
+<!-- Mobile Shell: TopAppBar (Shared Component styling applied) -->
+<header class="bg-background dark:bg-background w-full top-0 sticky flex justify-between items-center px-margin-mobile py-4 max-w-[600px] mx-auto z-50">
+<button class="flex items-center text-primary dark:text-primary transition-all duration-200 ease-in-out hover:opacity-80">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile tracking-tighter text-primary dark:text-primary">RepairLink</h1>
+<div class="w-6 h-6 rounded-full bg-surface-container overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A clean, minimalist portrait photograph of a user avatar. The image features a simple, flat lighting setup against a pure white background, consistent with a modern light-mode app aesthetic. The subject is styled casually but professionally, rendered in high contrast with deep blacks and bright whites to match the UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJvkbHUf_5wOSBhwzxQ1vFpzlo-T-Gfl9GmaPl7moc9Svuw9zYRGNdTL4s8gGULAWsNi4SM_uaSDPSR_1unENpCSDCbqrTQXcBdGV2IXLit1YZEXd_2NrSz9pdC7LGeK9C4tWa_qTVrij_MNjX0sT6GVWKOGeu887v-B13ntQqEVMK5NZ0rJVFcqTGZo2ERDDgnB9Zf030YvjFC63FU2iL8UaeEAF7x_IxZE5KjRfZfVrBVgyfnslM9A"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="max-w-[600px] mx-auto bg-background min-h-screen px-margin-mobile pb-24 md:shadow-2xl md:min-h-[calc(100vh-80px)] md:mt-4 md:rounded-xl">
+<!-- Status & Header Stacking -->
+<section class="flex flex-col space-y-stack-md pt-stack-md">
+<!-- Status Pill -->
+<div>
+<span class="inline-block bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-full">
+                    In Progress
+                </span>
+</div>
+<!-- Device Info -->
+<div>
+<h2 class="font-headline-xl text-headline-xl text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-[36px]" data-icon="smartphone">smartphone</span>
+                    iPhone 14
+                </h2>
+<p class="font-body-md text-body-md text-secondary mt-1">Req #892-441-A</p>
+</div>
+<!-- Issue Summary -->
+<div class="flex items-center space-x-3 bg-surface-bright p-4 rounded-lg shadow-[0px_4px_20px_rgba(0,0,0,0.02)]">
+<span class="material-symbols-outlined text-primary bg-surface-container p-2 rounded-lg" data-icon="broken_image">broken_image</span>
+<div>
+<h3 class="font-headline-md text-headline-md text-primary">Cracked Screen</h3>
+<p class="font-body-md text-body-md text-secondary">Front glass shattered, touch unresponsive in top left corner.</p>
+</div>
+</div>
+</section>
+<!-- Gallery Section -->
+<section class="mt-stack-lg">
+<h3 class="font-body-lg text-body-lg text-primary mb-stack-sm">Device Condition</h3>
+<div class="flex space-x-gutter overflow-x-auto no-scrollbar snap-x snap-mandatory">
+<div class="w-32 h-32 flex-shrink-0 snap-start bg-surface-container rounded-lg overflow-hidden shadow-sm border border-surface-container">
+<img alt="Device damage 1" class="w-full h-full object-cover" data-alt="A high-contrast, minimalist photograph of a damaged smartphone screen on a stark white background. The image focuses closely on a spiderweb crack originating from the top corner of the device. The lighting is clinical and bright, emphasizing the sharp lines of the shattered glass against the sleek black bezel of the phone. Modern light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9sG22TotPvhhGzE7Hg5-cEwC2BQhT0EWtVWvCez03COuI_DVHOHi6Aj4IwQpBeGbi-NlPv_uGc5430mrSujeQxtFzERagM43tYLmmSQo-4aEqigM4A_822Owa0N8JKuhFpbVijoOWzOtSChHk4SMWXcfmdaCum8GSsJspcY6J6f-UnzDCR5ud81mYnw11KmGVW9XJ10qmKfvUt_Fuo8yM13xk5i9tzjBz0kaTWsT3KRR2ybrXbWZKwg"/>
+</div>
+<div class="w-32 h-32 flex-shrink-0 snap-start bg-surface-container rounded-lg overflow-hidden shadow-sm border border-surface-container">
+<img alt="Device damage 2" class="w-full h-full object-cover" data-alt="A minimalist, top-down photograph of a heavily cracked modern smartphone lying flat on a pure white surface. The image highlights the texture of the shattered display glass with crisp, bright lighting. The color palette is restricted to deep blacks, stark whites, and subtle grays, matching an ultra-clean UI aesthetic. High clarity and focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSY2FyQAQpv7uPlBzngOrg2UWiEBSyTmlsIGR76PtVTktkoN1xaw7JEgA51T27BBFa77blyJY-df7Kgvt6lpDbZTe5I2iaPb06aGQyKy0uh99gj-2NKUnG9PKP5N5wL15Rxe_PeXOBqGhWTRojawkA_HmeMNp0vuS8kcPMhW68hKaI0k1cFL7Py_96Rz_754MyqlgZEUfSUNXSMwN7EDO7Rr3HOgNtksWdEsxjdtDnZ3E8VpNboS_afQ"/>
+</div>
+<div class="w-32 h-32 flex-shrink-0 snap-start flex items-center justify-center bg-surface-bright rounded-lg border border-outline-variant text-secondary">
+<span class="material-symbols-outlined" data-icon="add_photo_alternate">add_photo_alternate</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-secondary mt-3">Customer notes: Dropped on concrete floor. Display occasionally flickers.</p>
+</section>
+<!-- Timeline Section -->
+<section class="mt-stack-lg pb-stack-lg">
+<h3 class="font-body-lg text-body-lg text-primary mb-stack-md">Repair Status</h3>
+<div class="flex flex-col space-y-0 pl-2">
+<!-- Step 1 -->
+<div class="flex items-start">
+<div class="flex flex-col items-center mr-4">
+<div class="w-3 h-3 bg-primary rounded-full mt-1.5 z-10 shadow-[0_0_0_4px_#FFFFFF]"></div>
+<div class="w-[1px] h-10 bg-primary-fixed-dim -mt-1.5"></div>
+</div>
+<div class="pb-6">
+<p class="font-headline-md text-headline-md text-primary leading-none">Submitted</p>
+<p class="font-body-md text-body-md text-secondary mt-1">Oct 24, 09:41 AM</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start">
+<div class="flex flex-col items-center mr-4">
+<div class="w-3 h-3 bg-primary rounded-full mt-1.5 z-10 shadow-[0_0_0_4px_#FFFFFF]"></div>
+<div class="w-[1px] h-10 bg-primary-fixed-dim -mt-1.5"></div>
+</div>
+<div class="pb-6">
+<p class="font-headline-md text-headline-md text-primary leading-none">Acknowledged</p>
+<p class="font-body-md text-body-md text-secondary mt-1">Oct 24, 10:15 AM</p>
+</div>
+</div>
+<!-- Step 3 (Current) -->
+<div class="flex items-start">
+<div class="flex flex-col items-center mr-4">
+<div class="w-4 h-4 bg-primary rounded-full mt-1 z-10 shadow-[0_0_0_4px_#FFFFFF] flex items-center justify-center">
+<div class="w-1 h-1 bg-white rounded-full animate-pulse"></div>
+</div>
+<div class="w-[1px] h-10 bg-primary-fixed-dim -mt-1"></div>
+</div>
+<div class="pb-6">
+<p class="font-headline-md text-headline-md text-primary leading-none">In Progress</p>
+<p class="font-body-md text-body-md text-secondary mt-1">Diagnostics running.</p>
+</div>
+</div>
+<!-- Step 4 (Pending) -->
+<div class="flex items-start">
+<div class="flex flex-col items-center mr-4">
+<div class="w-3 h-3 border border-outline rounded-full mt-1.5 z-10 bg-background shadow-[0_0_0_4px_#FFFFFF]"></div>
+<!-- No line below the last item -->
+</div>
+<div>
+<p class="font-headline-md text-headline-md text-secondary leading-none">Completed</p>
+<p class="font-body-md text-body-md text-secondary mt-1">Awaiting completion.</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Suppressed BottomNav & FAB: As per instructions, transaction/detail screens should not show global nav -->
+</body></html>

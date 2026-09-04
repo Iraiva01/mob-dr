@@ -1,0 +1,38 @@
+// =============================================================================
+// New Request Screen (Placeholder)
+// =============================================================================
+// Will contain the icon-driven repair request submission flow:
+// brand grid → problem grid → photo upload → notes → submit.
+// =============================================================================
+
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function NewRequestScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>New Request</Text>
+      <Text style={styles.subtitle}>Submit a repair request — coming soon</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#000000',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#888888',
+  },
+});
