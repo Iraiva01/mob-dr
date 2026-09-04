@@ -16,6 +16,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { CustomerStackParamList } from '../types';
 import CustomerHomeScreen from '../screens/customer/CustomerHomeScreen';
+import NewRequestScreen from '../screens/customer/NewRequestScreen';
 
 const Stack = createNativeStackNavigator<CustomerStackParamList>();
 
@@ -31,6 +32,11 @@ export default function CustomerStack() {
         name="CustomerHome"
         component={CustomerHomeScreen}
         options={{ title: 'My Repairs' }}
+      />
+      <Stack.Screen
+        name="NewRequest"
+        component={NewRequestScreen}
+        options={{ title: 'New Request' }}
       />
     </Stack.Navigator>
   );

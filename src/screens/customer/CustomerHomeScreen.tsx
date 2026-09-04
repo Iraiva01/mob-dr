@@ -19,8 +19,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CustomerStackParamList } from '../../types';
+
+type CustomerHomeNavProp = NativeStackNavigationProp<CustomerStackParamList, 'CustomerHome'>;
 
 export default function CustomerHomeScreen() {
+  const navigation = useNavigation<CustomerHomeNavProp>();
   const { user, session, signOut } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
@@ -72,6 +78,15 @@ export default function CustomerHomeScreen() {
             repair request submission flow and request tracking timeline.
           </Text>
         </View>
+
+        {/* Submit New Request Button (Primary Action) */}
+        <TouchableOpacity
+          style={styles.newRequestButton}
+          onPress={() => navigation.navigate('NewRequest')}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.newRequestButtonText}>+ Submit New Request</Text>
+        </TouchableOpacity>
 
         {/* Sign Out Button */}
         <TouchableOpacity
@@ -177,6 +192,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#777777',
     lineHeight: 19,
+  },
+  newRequestButton: {
+    backgroundColor: '#000000',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  newRequestButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
   },
   signOutButton: {
     borderWidth: 1.5,
