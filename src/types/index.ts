@@ -89,9 +89,11 @@ export type CustomerTabParamList = {
   NewRequest: undefined;
 };
 
-/** Customer stack screens (includes tabs + detail screens) */
+/** Customer stack screens (includes placeholder home + detail screens) */
 export type CustomerStackParamList = {
-  CustomerTabs: undefined;
+  CustomerHome: undefined;
+  CustomerTabs?: undefined;
+  NewRequest?: undefined;
   RequestDetail: { requestId: string };
 };
 
@@ -101,8 +103,11 @@ export type ShopOwnerTabParamList = {
   OwnerDashboard: undefined;
 };
 
-/** Shop owner stack screens (includes tabs + detail screens) */
+/** Shop owner stack screens (includes placeholder home + detail screens) */
 export type ShopOwnerStackParamList = {
-  OwnerTabs: undefined;
+  ShopOwnerHome: undefined;
+  IncomingRequests?: undefined;
+  OwnerTabs?: undefined;
+  OwnerDashboard?: undefined;
   OwnerRequestDetail: { requestId: string };
 };

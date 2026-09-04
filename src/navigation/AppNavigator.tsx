@@ -1,14 +1,17 @@
 // =============================================================================
 // App Navigator (Root)
 // =============================================================================
-// Controls the top-level app state:
-//   1. isLoading === true → Show centered loading indicator.
-//   2. !user             → Show AuthNavigator (Login / Register screens).
-//   3. user !== null      → Show SessionConfirmedScreen to confirm active session
-//                           and role loaded from `public.users`.
+// The top-level root navigator that controls role-based screen routing.
+// Strictly adheres to the `role-based-navigation` skill:
 //
-// NOTE: Post-login customer and shop owner navigation stacks are kept ready
-// and will be activated once post-login navigation is requested.
+// Decision logic:
+//   1. isLoading === true || (user && !userRole) → Show centered loading spinner
+//   2. !user                                    → Show AuthNavigator (Login / Register)
+//   3. userRole === 'customer'                   → Show CustomerStack
+//   4. userRole === 'shop_owner'                 → Show ShopOwnerStack
+//
+// Both roles share this single app binary, but are routed into mutually
+// exclusive top-level navigation stacks based on their verified role.
 // =============================================================================
 
 import React from 'react';
@@ -16,13 +19,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import AuthNavigator from './AuthNavigator';
-import SessionConfirmedScreen from '../screens/auth/SessionConfirmedScreen';
+import CustomerStack from './CustomerStack';
+import ShopOwnerStack from './ShopOwnerStack';
 
 export default function AppNavigator() {
-  const { user, isLoading } = useAuth();
+  const { user, userRole, isLoading } = useAuth();
 
-  // While checking for an existing session on app launch
-  if (isLoading) {
+  // Show a loading screen while auth state is resolving or role profile is loading.
+  // This prevents brief flashes of the login screen or mismatched views.
+  if (isLoading || (user && !userRole)) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#000000" />
@@ -32,13 +37,14 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      {!user ? (
-        // Unauthenticated → Login / Signup screens
-        <AuthNavigator />
-      ) : (
-        // Authenticated → Confirms active user session and role
-        <SessionConfirmedScreen />
-      )}
+      {/* 1. Unauthenticated: Auth flow (Login / Signup) */}
+      {!user && <AuthNavigator />}
+
+      {/* 2. Customer: CustomerStack (mutually exclusive) */}
+      {user && userRole === 'customer' && <CustomerStack />}
+
+      {/* 3. Shop Owner: ShopOwnerStack (mutually exclusive) */}
+      {user && userRole === 'shop_owner' && <ShopOwnerStack />}
     </NavigationContainer>
   );
 }

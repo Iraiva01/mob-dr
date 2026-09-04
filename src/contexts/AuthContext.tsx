@@ -101,6 +101,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       if (currentSession?.user) {
+        if (currentSession.user.user_metadata?.role) {
+          setUserRole(currentSession.user.user_metadata.role as UserRole);
+        }
         fetchUserProfile(currentSession.user.id);
       }
       setIsLoading(false);
@@ -111,6 +114,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       async (_event, newSession) => {
         setSession(newSession);
         if (newSession?.user) {
+          if (newSession.user.user_metadata?.role) {
+            setUserRole(newSession.user.user_metadata.role as UserRole);
+          }
           await fetchUserProfile(newSession.user.id);
         } else {
           // User logged out — clear everything
