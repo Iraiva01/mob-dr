@@ -1,21 +1,19 @@
 // =============================================================================
 // Register Screen
 // =============================================================================
-// Uber-inspired signup with Full Name, Phone Number, Email, Password,
-// and Role Selection ("Customer" or "Shop Owner").
+// Uber-inspired signup with Full Name, Phone Number, Email, and Password.
 //
 // Uses Supabase Auth for account creation. On signup:
-//   - Passes `role`, `full_name`, and `phone_number` in `options.data`.
+//   - Passes `role: 'customer'`, `full_name`, and `phone_number` in `options.data`.
 //   - The `on_auth_user_created` database trigger writes the profile row into
-//     the `public.users` table.
+//     the `public.users` table with role = 'customer'.
 //   - An authenticated session is established immediately.
 //
 // Design specification (from design.md & new-screen-design skill):
 //   - Pure white background (#FFFFFF), black accents (#000000)
 //   - Heading "Create Account" in bold black
 //   - Stacked underline-style inputs: Full Name, Phone Number, Email, Password
-//   - Segmented role selector: "Customer" and "Shop Owner"
-//     (selected = black fill with white text; unselected = white with black border)
+//   - All new signups default to Customer role (Shop Owner is pre-seeded)
 //   - Full-width black "Create Account" button with white text and subtle shadow
 //   - Footer: "Already have an account? Log in"
 // =============================================================================
@@ -36,7 +34,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../../config/supabase';
-import { AuthStackParamList, UserRole } from '../../types';
+import { AuthStackParamList } from '../../types';
 
 type RegisterNavProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>;
 
@@ -48,7 +46,6 @@ export default function RegisterScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole>('customer');
   const [isLoading, setIsLoading] = useState(false);
 
   /**
@@ -87,7 +84,7 @@ export default function RegisterScreen() {
           data: {
             full_name: trimmedName,
             phone_number: trimmedPhone,
-            role: selectedRole,
+            role: 'customer',
           },
         },
       });
@@ -190,50 +187,6 @@ export default function RegisterScreen() {
           />
         </View>
 
-        {/* ---- Role selector: Segmented Control ---- */}
-        <View style={styles.roleSection}>
-          <Text style={styles.roleLabel}>I am a...</Text>
-          <View style={styles.roleToggle}>
-            <TouchableOpacity
-              style={[
-                styles.roleOption,
-                selectedRole === 'customer' && styles.roleOptionSelected,
-              ]}
-              onPress={() => setSelectedRole('customer')}
-              activeOpacity={0.8}
-              disabled={isLoading}
-            >
-              <Text
-                style={[
-                  styles.roleOptionText,
-                  selectedRole === 'customer' && styles.roleOptionTextSelected,
-                ]}
-              >
-                Customer
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.roleOption,
-                selectedRole === 'shop_owner' && styles.roleOptionSelected,
-              ]}
-              onPress={() => setSelectedRole('shop_owner')}
-              activeOpacity={0.8}
-              disabled={isLoading}
-            >
-              <Text
-                style={[
-                  styles.roleOptionText,
-                  selectedRole === 'shop_owner' && styles.roleOptionTextSelected,
-                ]}
-              >
-                Shop Owner
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
         {/* ---- Signup button ---- */}
         <TouchableOpacity
           style={[styles.button, isLoading && styles.buttonDisabled]}
@@ -322,46 +275,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1.5,
     borderBottomColor: '#E0E0E0',
   },
-
-  // Role selector — Segmented toggle
-  roleSection: {
-    marginTop: 8,
-    marginBottom: 28,
-  },
-  roleLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#8A8A8A',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-    marginBottom: 12,
-  },
-  roleToggle: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  roleOption: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: '#000000',
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  roleOptionSelected: {
-    backgroundColor: '#000000',
-  },
-  roleOptionText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  roleOptionTextSelected: {
-    color: '#FFFFFF',
-  },
-
   // Primary action button — full-width black pill
   button: {
     backgroundColor: '#000000',
@@ -369,7 +282,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 4,
+    marginTop: 8,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
