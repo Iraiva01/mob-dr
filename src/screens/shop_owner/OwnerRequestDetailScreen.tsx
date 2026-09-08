@@ -30,12 +30,16 @@ import {
   Dimensions,
   Modal,
   RefreshControl,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ShopOwnerStackParamList, RepairRequest, RepairPhoto, User } from '../../types';
+import { ShopOwnerStackParamList, RepairRequest, RepairPhoto, User, CompletedRepair } from '../../types';
 import { supabase } from '../../config/supabase';
 import { getSignedPhotoUrls } from '../../utils/storage';
+import { getBrandLogo } from '../../components/BrandLogos';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -53,6 +57,7 @@ export default function OwnerRequestDetailScreen({ route, navigation }: Props) {
   const [request, setRequest] = useState<RepairRequest | null>(null);
   const [customer, setCustomer] = useState<CustomerInfo | null>(null);
   const [photos, setPhotos] = useState<string[]>([]);
+  const [completedRepair, setCompletedRepair] = useState<CompletedRepair | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activePhotoModal, setActivePhotoModal] = useState<string | null>(null);
@@ -60,6 +65,12 @@ export default function OwnerRequestDetailScreen({ route, navigation }: Props) {
   // Button action loading states
   const [isAccepting, setIsAccepting] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
+
+  // Complete Repair Modal states
+  const [isCompleteModalVisible, setIsCompleteModalVisible] = useState(false);
+  const [amountCharged, setAmountCharged] = useState('');
+  const [repairNotes, setRepairNotes] = useState('');
+  const [isCompleting, setIsCompleting] = useState(false);
 
   /**
    * Fetch repair request, customer profile, and photo thumbnails.
@@ -112,6 +123,21 @@ export default function OwnerRequestDetailScreen({ route, navigation }: Props) {
         setPhotos(signedUrls);
       } else {
         setPhotos([]);
+      }
+
+      // 4. Fetch completed repairs record if already completed
+      if (req.status === 'completed') {
+        const { data: compData, error: compError } = await supabase
+          .from('completed_repairs')
+          .select('*')
+          .eq('repair_request_id', requestId)
+          .maybeSingle();
+
+        if (compError) {
+          console.warn('Could not fetch completed repair info:', compError.message);
+        } else if (compData) {
+          setCompletedRepair(compData as CompletedRepair);
+        }
       }
     } catch (err) {
       console.error('Unexpected error fetching request details:', err);
@@ -179,20 +205,111 @@ export default function OwnerRequestDetailScreen({ route, navigation }: Props) {
         }
       }
 
+      // Update local state to accepted so screen switches to in-progress immediately
+      setRequest((prev) => (prev ? { ...prev, status: 'accepted', updated_at: new Date().toISOString() } : null));
+
       Alert.alert(
         'Request Accepted',
-        'You have accepted this repair request. You can now coordinate with the customer.',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(),
-          },
-        ]
+        'You have accepted this doorstep repair request. It is now In Progress. Coordinate with the customer and tap "Complete Repair" once the service is finished.',
+        [{ text: 'OK' }]
       );
     } catch (err) {
       Alert.alert('Error', err instanceof Error ? err.message : 'Failed to accept request');
     } finally {
       setIsAccepting(false);
+    }
+  };
+
+  /**
+   * Complete repair and record charge via Edge Function (`complete-repair-request`).
+   */
+  const handleCompleteRepair = async () => {
+    if (isCompleting) return;
+
+    const numericAmount = parseFloat(amountCharged.replace(/[^0-9.]/g, ''));
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      Alert.alert('Invalid Amount', 'Please enter a valid repair amount charged in ₹.');
+      return;
+    }
+
+    setIsCompleting(true);
+    try {
+      const nowIso = new Date().toISOString();
+      const cleanNotes = repairNotes.trim();
+
+      // 1. Invoke complete-repair-request Edge Function
+      const { data: edgeData, error: edgeError } = await supabase.functions.invoke(
+        'complete-repair-request',
+        {
+          body: {
+            repair_request_id: requestId,
+            amount_charged: numericAmount,
+            notes: cleanNotes || undefined,
+            completion_date: nowIso,
+          },
+        }
+      );
+
+      if (edgeError) {
+        console.warn('Edge function error, attempting resilient DB fallback:', edgeError.message);
+        // Fallback: direct database update and completed_repairs insert
+        const { error: dbUpdateError } = await supabase
+          .from('repair_requests')
+          .update({ status: 'completed', updated_at: nowIso })
+          .eq('id', requestId);
+
+        if (dbUpdateError) {
+          throw new Error(dbUpdateError.message);
+        }
+
+        const { data: compRow, error: dbInsertError } = await supabase
+          .from('completed_repairs')
+          .upsert(
+            {
+              repair_request_id: requestId,
+              amount_charged: numericAmount,
+              completion_date: nowIso,
+              notes: cleanNotes || null,
+            },
+            { onConflict: 'repair_request_id' }
+          )
+          .select()
+          .single();
+
+        if (dbInsertError) {
+          throw new Error(dbInsertError.message);
+        }
+
+        setCompletedRepair(compRow as CompletedRepair);
+      } else if (edgeData?.data?.completed_repair) {
+        setCompletedRepair(edgeData.data.completed_repair as CompletedRepair);
+      } else {
+        setCompletedRepair({
+          id: 'comp_' + requestId,
+          repair_request_id: requestId,
+          amount_charged: numericAmount,
+          completion_date: nowIso,
+          notes: cleanNotes,
+        });
+      }
+
+      // 2. Update local request state
+      setRequest((prev) => (prev ? { ...prev, status: 'completed', updated_at: nowIso } : null));
+      setIsCompleteModalVisible(false);
+      setAmountCharged('');
+      setRepairNotes('');
+
+      Alert.alert(
+        'Repair Completed!',
+        `The repair has been successfully recorded with ₹${numericAmount.toLocaleString(
+          'en-IN'
+        )} charged. This has been updated in your revenue statistics.`,
+        [{ text: 'OK' }]
+      );
+    } catch (err) {
+      Alert.alert('Error', err instanceof Error ? err.message : 'Failed to complete repair');
+    } finally {
+      setIsCompleting(false);
     }
   };
 
@@ -351,6 +468,9 @@ export default function OwnerRequestDetailScreen({ route, navigation }: Props) {
   const isPending = request.status === 'pending';
   const isAccepted = request.status === 'accepted';
   const isRejected = request.status === 'rejected';
+  const isCompleted = request.status === 'completed';
+
+  const BrandLogoComponent = getBrandLogo(request.brand);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -385,23 +505,71 @@ export default function OwnerRequestDetailScreen({ route, navigation }: Props) {
           <View
             style={[
               styles.statusBanner,
-              isAccepted ? styles.statusBannerAccepted : styles.statusBannerRejected,
+              isCompleted
+                ? styles.statusBannerCompleted
+                : isAccepted
+                ? styles.statusBannerAccepted
+                : styles.statusBannerRejected,
             ]}
           >
             <Ionicons
-              name={isAccepted ? 'checkmark-circle' : 'close-circle'}
+              name={
+                isCompleted
+                  ? 'checkmark-done-circle'
+                  : isAccepted
+                  ? 'construct'
+                  : 'close-circle'
+              }
               size={18}
-              color={isAccepted ? '#FFFFFF' : '#8A8A8A'}
+              color={isRejected ? '#8A8A8A' : '#FFFFFF'}
               style={styles.statusBannerIcon}
             />
             <Text
               style={[
                 styles.statusBannerText,
-                isAccepted ? styles.statusTextAccepted : styles.statusTextRejected,
+                isRejected ? styles.statusTextRejected : styles.statusTextLight,
               ]}
             >
-              This request is {request.status.toUpperCase()}
+              {isCompleted
+                ? 'REPAIR COMPLETED'
+                : isAccepted
+                ? 'IN PROGRESS — REPAIR ACCEPTED'
+                : 'REQUEST DECLINED'}
             </Text>
+          </View>
+        )}
+
+        {/* Completed Repair Summary Card (if repair has been completed) */}
+        {isCompleted && (
+          <View style={styles.completedSummaryCard}>
+            <View style={styles.completedHeaderRow}>
+              <View style={styles.completedBadgeCircle}>
+                <Ionicons name="checkmark-done" size={20} color="#FFFFFF" />
+              </View>
+              <View style={styles.completedHeaderInfo}>
+                <Text style={styles.completedHeaderLabel}>REPAIR RECORD & REVENUE</Text>
+                <Text style={styles.completedRevenueAmount}>
+                  ₹{(completedRepair?.amount_charged ?? 0).toLocaleString('en-IN')}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.completedDivider} />
+
+            <View style={styles.completedMetaRow}>
+              <Ionicons name="calendar-outline" size={15} color="#8A8A8A" style={{ marginRight: 6 }} />
+              <Text style={styles.completedMetaLabel}>Completed on:</Text>
+              <Text style={styles.completedMetaValue}>
+                {formatDate(completedRepair?.completion_date || request.updated_at)}
+              </Text>
+            </View>
+
+            {Boolean(completedRepair?.notes?.trim()) && (
+              <View style={styles.completedNotesContainer}>
+                <Text style={styles.completedNotesTitle}>Service Notes:</Text>
+                <Text style={styles.completedNotesText}>{completedRepair?.notes}</Text>
+              </View>
+            )}
           </View>
         )}
 
@@ -445,9 +613,9 @@ export default function OwnerRequestDetailScreen({ route, navigation }: Props) {
         {/* Device Brand & Name + Problem Type */}
         <View style={styles.card}>
           <View style={styles.deviceRow}>
-            {/* Brand Icon */}
+            {/* Brand Vector Logomark */}
             <View style={styles.brandIconCircle}>
-              <Ionicons name={getBrandIcon(request.brand)} size={28} color="#000000" />
+              <BrandLogoComponent color="#000000" size={28} />
             </View>
 
             {/* Device Name & Brand */}
@@ -528,7 +696,7 @@ export default function OwnerRequestDetailScreen({ route, navigation }: Props) {
         </Text>
       </ScrollView>
 
-      {/* Bottom Actions: Two full-width buttons side-by-side per design.md */}
+      {/* Bottom Actions Bar */}
       {isPending ? (
         <View style={styles.bottomBar}>
           {/* Black "Accept" Button on the left */}
@@ -565,6 +733,23 @@ export default function OwnerRequestDetailScreen({ route, navigation }: Props) {
             )}
           </TouchableOpacity>
         </View>
+      ) : isAccepted ? (
+        <View style={styles.bottomBar}>
+          {/* Black "Complete Repair" Button for Accepted Requests */}
+          <TouchableOpacity
+            style={styles.completeRepairButton}
+            onPress={() => setIsCompleteModalVisible(true)}
+            activeOpacity={0.85}
+          >
+            <Ionicons
+              name="checkmark-done-circle"
+              size={20}
+              color="#FFFFFF"
+              style={{ marginRight: 8 }}
+            />
+            <Text style={styles.completeRepairButtonText}>Complete Repair</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         <View style={styles.resolvedBottomBar}>
           <TouchableOpacity
@@ -572,7 +757,7 @@ export default function OwnerRequestDetailScreen({ route, navigation }: Props) {
             onPress={() => navigation.goBack()}
             activeOpacity={0.85}
           >
-            <Text style={styles.backToListButtonText}>Back to Incoming Requests</Text>
+            <Text style={styles.backToListButtonText}>Back to Doorstep Repairs</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -600,6 +785,110 @@ export default function OwnerRequestDetailScreen({ route, navigation }: Props) {
             />
           )}
         </View>
+      </Modal>
+
+      {/* Complete Repair & Enter Amount Modal */}
+      <Modal
+        visible={isCompleteModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => {
+          if (!isCompleting) setIsCompleteModalVisible(false);
+        }}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.completeModalOverlay}
+        >
+          <TouchableOpacity
+            style={styles.modalDismissTouchable}
+            activeOpacity={1}
+            onPress={() => {
+              if (!isCompleting) setIsCompleteModalVisible(false);
+            }}
+          />
+
+          <View style={styles.completeModalContent}>
+            {/* Grab handle indicator */}
+            <View style={styles.modalGrabHandle} />
+
+            {/* Modal Title Bar */}
+            <View style={styles.completeModalHeader}>
+              <View>
+                <Text style={styles.completeModalTitle}>Complete Repair</Text>
+                <Text style={styles.completeModalSubtitle}>
+                  Enter the final repair charge & notes
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  if (!isCompleting) setIsCompleteModalVisible(false);
+                }}
+                disabled={isCompleting}
+                style={styles.modalCloseCircle}
+              >
+                <Ionicons name="close" size={20} color="#000000" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Amount Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>
+                AMOUNT CHARGED (₹) <Text style={styles.requiredAsterisk}>*</Text>
+              </Text>
+              <View style={styles.amountInputContainer}>
+                <Text style={styles.currencyPrefix}>₹</Text>
+                <TextInput
+                  style={styles.amountTextInput}
+                  placeholder="0"
+                  placeholderTextColor="#B0B0B0"
+                  keyboardType="numeric"
+                  value={amountCharged}
+                  onChangeText={setAmountCharged}
+                  editable={!isCompleting}
+                  autoFocus
+                />
+              </View>
+            </View>
+
+            {/* Repair Notes Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>REPAIR NOTES (OPTIONAL)</Text>
+              <TextInput
+                style={styles.notesTextInput}
+                placeholder="e.g. Display glass replaced, tested touch responsiveness."
+                placeholderTextColor="#A0A0A0"
+                value={repairNotes}
+                onChangeText={setRepairNotes}
+                multiline
+                numberOfLines={3}
+                editable={!isCompleting}
+              />
+            </View>
+
+            {/* Action Buttons */}
+            <TouchableOpacity
+              style={[styles.confirmCompleteButton, isCompleting && styles.buttonDisabled]}
+              onPress={handleCompleteRepair}
+              disabled={isCompleting}
+              activeOpacity={0.85}
+            >
+              {isCompleting ? (
+                <ActivityIndicator color="#FFFFFF" size="small" />
+              ) : (
+                <>
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={18}
+                    color="#FFFFFF"
+                    style={{ marginRight: 8 }}
+                  />
+                  <Text style={styles.confirmCompleteButtonText}>Confirm & Complete Repair</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -702,6 +991,9 @@ const styles = StyleSheet.create({
   statusBannerAccepted: {
     backgroundColor: '#000000',
   },
+  statusBannerCompleted: {
+    backgroundColor: '#000000',
+  },
   statusBannerRejected: {
     backgroundColor: '#F7F7F7',
     borderWidth: 1,
@@ -718,8 +1010,95 @@ const styles = StyleSheet.create({
   statusTextAccepted: {
     color: '#FFFFFF',
   },
+  statusTextLight: {
+    color: '#FFFFFF',
+  },
   statusTextRejected: {
     color: '#8A8A8A',
+  },
+
+  // Completed Repair Summary Card
+  completedSummaryCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 1.5,
+    borderColor: '#000000',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  completedHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  completedBadgeCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#000000',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  completedHeaderInfo: {
+    flex: 1,
+  },
+  completedHeaderLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#8A8A8A',
+    letterSpacing: 0.8,
+    marginBottom: 2,
+  },
+  completedRevenueAmount: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#000000',
+    letterSpacing: -0.5,
+  },
+  completedDivider: {
+    height: 1,
+    backgroundColor: '#F0F0F0',
+    marginVertical: 14,
+  },
+  completedMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  completedMetaLabel: {
+    fontSize: 13,
+    color: '#8A8A8A',
+    fontWeight: '500',
+    marginRight: 6,
+  },
+  completedMetaValue: {
+    fontSize: 13,
+    color: '#000000',
+    fontWeight: '700',
+  },
+  completedNotesContainer: {
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: '#F9F9F9',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#EEEEEE',
+  },
+  completedNotesTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#8A8A8A',
+    marginBottom: 4,
+    textTransform: 'uppercase',
+  },
+  completedNotesText: {
+    fontSize: 13,
+    color: '#333333',
+    lineHeight: 18,
   },
 
   // Section Headers
@@ -1049,5 +1428,151 @@ const styles = StyleSheet.create({
   modalImage: {
     width: SCREEN_WIDTH * 0.92,
     height: '75%',
+  },
+
+  // Complete Repair Button (for In Progress requests)
+  completeRepairButton: {
+    flex: 1,
+    backgroundColor: '#000000',
+    borderRadius: 14,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  completeRepairButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: -0.2,
+  },
+
+  // Complete Repair Modal
+  completeModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.65)',
+    justifyContent: 'flex-end',
+  },
+  modalDismissTouchable: {
+    flex: 1,
+  },
+  completeModalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    paddingBottom: Platform.OS === 'ios' ? 40 : 28,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  modalGrabHandle: {
+    width: 42,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#E0E0E0',
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+  completeModalHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  completeModalTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#000000',
+    letterSpacing: -0.4,
+  },
+  completeModalSubtitle: {
+    fontSize: 13,
+    color: '#8A8A8A',
+    marginTop: 2,
+  },
+  modalCloseCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#F5F5F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputGroup: {
+    marginBottom: 18,
+  },
+  inputLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: 0.6,
+    marginBottom: 8,
+  },
+  requiredAsterisk: {
+    color: '#000000',
+    fontWeight: '900',
+  },
+  amountInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#000000',
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    backgroundColor: '#FFFFFF',
+    height: 56,
+  },
+  currencyPrefix: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#000000',
+    marginRight: 8,
+  },
+  amountTextInput: {
+    flex: 1,
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#000000',
+    padding: 0,
+  },
+  notesTextInput: {
+    borderWidth: 1,
+    borderColor: '#E2E2E2',
+    borderRadius: 14,
+    padding: 14,
+    fontSize: 14,
+    color: '#000000',
+    backgroundColor: '#FAFAFA',
+    minHeight: 74,
+    textAlignVertical: 'top',
+  },
+  confirmCompleteButton: {
+    backgroundColor: '#000000',
+    borderRadius: 14,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 6,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  confirmCompleteButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: -0.2,
   },
 });

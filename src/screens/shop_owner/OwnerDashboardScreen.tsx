@@ -30,6 +30,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../config/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { getBrandLogo } from '../../components/BrandLogos';
 
 type Period = 'this_month' | 'last_month' | 'all_time';
 
@@ -222,14 +223,13 @@ export default function OwnerDashboardScreen() {
   };
 
   /**
-   * Format currency values.
+   * Format currency values in Indian Rupees (₹).
    */
   const formatCurrency = (val: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return `₹${Number(val || 0).toLocaleString('en-IN', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })}`;
   };
 
   /**
@@ -391,7 +391,7 @@ export default function OwnerDashboardScreen() {
                     <View key={`bar_${idx}`} style={styles.chartColumn}>
                       {bar.amount > 0 && (
                         <Text style={styles.barAmountText}>
-                          {bar.amount >= 1000 ? `$${(bar.amount / 1000).toFixed(1)}k` : `$${bar.amount}`}
+                          {bar.amount >= 1000 ? `₹${(bar.amount / 1000).toFixed(1)}k` : `₹${bar.amount}`}
                         </Text>
                       )}
                       <View style={styles.barTrack}>
@@ -428,13 +428,13 @@ export default function OwnerDashboardScreen() {
             {completedRepairs.length > 0 ? (
               completedRepairs.map((item) => {
                 const req = item.repair_request;
+                const BrandLogoComponent = getBrandLogo(req?.brand);
                 return (
                   <View key={item.id} style={styles.repairCard}>
                     {/* Device Brand Icon */}
                     <View style={styles.repairIconCircle}>
-                      <Ionicons
-                        name={getBrandIcon(req?.brand)}
-                        size={22}
+                      <BrandLogoComponent
+                        size={20}
                         color="#000000"
                       />
                     </View>

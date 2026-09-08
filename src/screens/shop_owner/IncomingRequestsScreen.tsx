@@ -37,6 +37,7 @@ import { ShopOwnerStackParamList, RepairRequest, RepairPhoto } from '../../types
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../config/supabase';
 import { getSignedPhotoUrl } from '../../utils/storage';
+import { getBrandLogo } from '../../components/BrandLogos';
 
 type IncomingRequestsNavProp = NativeStackNavigationProp<ShopOwnerStackParamList, 'ShopOwnerHome'>;
 
@@ -44,24 +45,27 @@ interface RequestWithThumbnail extends RepairRequest {
   thumbnailUrl?: string | null;
 }
 
+type TabType = 'pending' | 'in_progress';
+
 export default function IncomingRequestsScreen() {
   const navigation = useNavigation<IncomingRequestsNavProp>();
   const { signOut } = useAuth();
 
+  const [activeTab, setActiveTab] = useState<TabType>('pending');
   const [requests, setRequests] = useState<RequestWithThumbnail[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   /**
-   * Fetch all repair requests with status = 'pending' and their first photo thumbnail.
+   * Fetch all repair requests with status in ('pending', 'accepted') and photo thumbnails.
    */
-  const fetchPendingRequests = useCallback(async () => {
+  const fetchRequests = useCallback(async () => {
     try {
-      // 1. Fetch pending requests
+      // 1. Fetch pending and accepted (in progress) requests
       const { data: requestData, error: requestError } = await supabase
         .from('repair_requests')
         .select('*')
-        .eq('status', 'pending')
+        .in('status', ['pending', 'accepted'])
         .order('created_at', { ascending: false });
 
       if (requestError) {
@@ -69,15 +73,15 @@ export default function IncomingRequestsScreen() {
         return;
       }
 
-      const pendingList = (requestData as RepairRequest[]) || [];
+      const activeList = (requestData as RepairRequest[]) || [];
 
-      if (pendingList.length === 0) {
+      if (activeList.length === 0) {
         setRequests([]);
         return;
       }
 
       // 2. Fetch associated photos for thumbnail preview
-      const requestIds = pendingList.map((r) => r.id);
+      const requestIds = activeList.map((r) => r.id);
       const { data: photosData, error: photosError } = await supabase
         .from('repair_photos')
         .select('repair_request_id, photo_url')
@@ -112,7 +116,7 @@ export default function IncomingRequestsScreen() {
       );
 
       // 4. Combine into final list
-      const itemsWithThumbnails: RequestWithThumbnail[] = pendingList.map((r) => ({
+      const itemsWithThumbnails: RequestWithThumbnail[] = activeList.map((r) => ({
         ...r,
         thumbnailUrl: thumbnailMap[r.id] || null,
       }));
@@ -126,16 +130,16 @@ export default function IncomingRequestsScreen() {
     }
   }, []);
 
-  // Re-fetch whenever the screen gains focus (e.g. returning after accepting/rejecting a request)
+  // Re-fetch whenever the screen gains focus (e.g. returning after accepting/rejecting/completing a request)
   useFocusEffect(
     useCallback(() => {
-      fetchPendingRequests();
-    }, [fetchPendingRequests])
+      fetchRequests();
+    }, [fetchRequests])
   );
 
   const handleRefresh = () => {
     setIsRefreshing(true);
-    fetchPendingRequests();
+    fetchRequests();
   };
 
   const handleSignOut = () => {
@@ -153,18 +157,6 @@ export default function IncomingRequestsScreen() {
         },
       },
     ]);
-  };
-
-  /**
-   * Get brand vector icon.
-   */
-  const getBrandIcon = (brand: string): any => {
-    const b = brand.toLowerCase();
-    if (b.includes('apple')) return 'logo-apple';
-    if (b.includes('samsung')) return 'phone-portrait-outline';
-    if (b.includes('oneplus')) return 'hardware-chip-outline';
-    if (b.includes('xiaomi')) return 'tablet-portrait-outline';
-    return 'phone-portrait-outline';
   };
 
   /**
@@ -199,6 +191,11 @@ export default function IncomingRequestsScreen() {
     }
   };
 
+  // Filter requests by active tab
+  const pendingRequests = requests.filter((r) => r.status === 'pending');
+  const inProgressRequests = requests.filter((r) => r.status === 'accepted');
+  const displayedRequests = activeTab === 'pending' ? pendingRequests : inProgressRequests;
+
   /**
    * Render individual incoming request card per design.md:
    *  - Left: customer's uploaded photo thumbnail (rounded square)
@@ -208,9 +205,12 @@ export default function IncomingRequestsScreen() {
    *  - Subtle ambient shadow, no heavy borders
    */
   const renderRequestCard = ({ item }: { item: RequestWithThumbnail }) => {
+    const BrandLogoComponent = getBrandLogo(item.brand);
+    const isInProgress = item.status === 'accepted';
+
     return (
       <TouchableOpacity
-        style={styles.card}
+        style={[styles.card, isInProgress && styles.inProgressCard]}
         activeOpacity={0.85}
         onPress={() => navigation.navigate('OwnerRequestDetail', { requestId: item.id })}
       >
@@ -221,24 +221,27 @@ export default function IncomingRequestsScreen() {
               <Image source={{ uri: item.thumbnailUrl }} style={styles.thumbnailImage} />
             ) : (
               <View style={styles.thumbnailFallback}>
-                <Ionicons name={getBrandIcon(item.brand)} size={28} color="#000000" />
+                <BrandLogoComponent color="#000000" size={26} />
               </View>
             )}
           </View>
 
           {/* Middle: Brand/Device Info & Problem Type */}
           <View style={styles.cardInfo}>
-            {/* Top row: Device name & submission time */}
+            {/* Top row: Brand pill / status badge & submission time */}
             <View style={styles.cardTopRow}>
-              <View style={styles.brandBadge}>
-                <Ionicons
-                  name={getBrandIcon(item.brand)}
-                  size={12}
-                  color="#000000"
-                  style={styles.brandBadgeIcon}
-                />
-                <Text style={styles.brandBadgeText}>{item.brand.toUpperCase()}</Text>
-              </View>
+              {isInProgress ? (
+                <View style={styles.inProgressBadge}>
+                  <Ionicons name="construct" size={10} color="#FFFFFF" style={{ marginRight: 4 }} />
+                  <Text style={styles.inProgressBadgeText}>IN PROGRESS</Text>
+                </View>
+              ) : (
+                <View style={styles.brandBadge}>
+                  <BrandLogoComponent color="#000000" size={11} />
+                  <Text style={styles.brandBadgeText}>{item.brand.toUpperCase()}</Text>
+                </View>
+              )}
+
               {/* Submission time (top right, small gray text) */}
               <Text style={styles.submissionTimeText}>
                 {formatSubmissionTime(item.created_at)}
@@ -254,7 +257,7 @@ export default function IncomingRequestsScreen() {
             <View style={styles.problemRow}>
               <Ionicons
                 name={getProblemIcon(item.problem_type)}
-                size={14}
+                size={13}
                 color="#8A8A8A"
                 style={styles.problemIcon}
               />
@@ -262,6 +265,14 @@ export default function IncomingRequestsScreen() {
                 {item.problem_type}
               </Text>
             </View>
+
+            {/* In Progress Action Prompt */}
+            {isInProgress && (
+              <View style={styles.actionPromptRow}>
+                <Text style={styles.actionPromptText}>Tap to view & complete repair</Text>
+                <Ionicons name="chevron-forward" size={14} color="#000000" />
+              </View>
+            )}
           </View>
         </View>
       </TouchableOpacity>
@@ -269,20 +280,35 @@ export default function IncomingRequestsScreen() {
   };
 
   /**
-   * Empty state when no pending requests exist.
+   * Empty state tailored to active tab.
    */
   const renderEmptyState = () => {
     if (isLoading) return null;
 
+    if (activeTab === 'pending') {
+      return (
+        <View style={styles.emptyContainer}>
+          <View style={styles.emptyIconCircle}>
+            <Ionicons name="checkmark-done-circle-outline" size={44} color="#000000" />
+          </View>
+          <Text style={styles.emptyTitle}>All Caught Up!</Text>
+          <Text style={styles.emptySubtitle}>
+            There are no pending doorstep repair requests right now. When customers submit requests,
+            they will appear here for your review.
+          </Text>
+        </View>
+      );
+    }
+
     return (
       <View style={styles.emptyContainer}>
         <View style={styles.emptyIconCircle}>
-          <Ionicons name="checkmark-done-circle-outline" size={44} color="#000000" />
+          <Ionicons name="hammer-outline" size={40} color="#000000" />
         </View>
-        <Text style={styles.emptyTitle}>All Caught Up!</Text>
+        <Text style={styles.emptyTitle}>No Repairs In Progress</Text>
         <Text style={styles.emptySubtitle}>
-          There are no pending doorstep repair requests right now. When customers submit requests,
-          they will appear here.
+          When you accept incoming requests, they stay here until completed so you can contact the
+          customer and enter the final repair charge.
         </Text>
       </View>
     );
@@ -293,10 +319,10 @@ export default function IncomingRequestsScreen() {
       {/* Top Header Bar */}
       <View style={styles.header}>
         <View style={styles.headerTitleGroup}>
-          <Text style={styles.headerTitle}>Incoming Requests</Text>
-          {/* Small badge showing count of pending requests */}
+          <Text style={styles.headerTitle}>Doorstep Repairs</Text>
+          {/* Small badge showing total active requests */}
           <View style={styles.countBadge}>
-            <Text style={styles.countBadgeText}>{requests.length}</Text>
+            <Text style={styles.countBadgeText}>{displayedRequests.length}</Text>
           </View>
         </View>
 
@@ -311,15 +337,69 @@ export default function IncomingRequestsScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Segmented Control / Tab Switcher: Pending vs In Progress */}
+      <View style={styles.segmentContainer}>
+        <TouchableOpacity
+          style={[styles.segmentButton, activeTab === 'pending' && styles.segmentButtonActive]}
+          onPress={() => setActiveTab('pending')}
+          activeOpacity={0.8}
+        >
+          <Text
+            style={[styles.segmentButtonText, activeTab === 'pending' && styles.segmentButtonTextActive]}
+          >
+            Pending
+          </Text>
+          <View
+            style={[styles.segmentBadge, activeTab === 'pending' && styles.segmentBadgeActive]}
+          >
+            <Text
+              style={[
+                styles.segmentBadgeText,
+                activeTab === 'pending' && styles.segmentBadgeTextActive,
+              ]}
+            >
+              {pendingRequests.length}
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.segmentButton, activeTab === 'in_progress' && styles.segmentButtonActive]}
+          onPress={() => setActiveTab('in_progress')}
+          activeOpacity={0.8}
+        >
+          <Text
+            style={[
+              styles.segmentButtonText,
+              activeTab === 'in_progress' && styles.segmentButtonTextActive,
+            ]}
+          >
+            In Progress
+          </Text>
+          <View
+            style={[styles.segmentBadge, activeTab === 'in_progress' && styles.segmentBadgeActive]}
+          >
+            <Text
+              style={[
+                styles.segmentBadgeText,
+                activeTab === 'in_progress' && styles.segmentBadgeTextActive,
+              ]}
+            >
+              {inProgressRequests.length}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
       {/* Main List */}
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#000000" />
-          <Text style={styles.loadingText}>Loading incoming requests...</Text>
+          <Text style={styles.loadingText}>Loading doorstep repairs...</Text>
         </View>
       ) : (
         <FlatList
-          data={requests}
+          data={displayedRequests}
           keyExtractor={(item) => item.id}
           renderItem={renderRequestCard}
           contentContainerStyle={styles.listContent}
@@ -388,6 +468,63 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7F7F7',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+
+  // Segmented Control Tabs
+  segmentContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#F7F7F7',
+    marginHorizontal: 24,
+    marginTop: 14,
+    marginBottom: 6,
+    borderRadius: 12,
+    padding: 4,
+  },
+  segmentButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    gap: 8,
+  },
+  segmentButtonActive: {
+    backgroundColor: '#000000',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  segmentButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#8A8A8A',
+  },
+  segmentButtonTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  segmentBadge: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 10,
+    backgroundColor: '#EBEBEB',
+    minWidth: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  segmentBadgeActive: {
+    backgroundColor: '#FFFFFF',
+  },
+  segmentBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#777777',
+  },
+  segmentBadgeTextActive: {
+    color: '#000000',
   },
 
   // Loading
@@ -499,6 +636,39 @@ const styles = StyleSheet.create({
   problemTypeText: {
     fontSize: 13,
     color: '#666666',
+  },
+
+  // In Progress Card Specific Styles
+  inProgressCard: {
+    borderColor: '#D8D8D8',
+  },
+  inProgressBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#000000',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  inProgressBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  actionPromptRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#F2F2F2',
+  },
+  actionPromptText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#000000',
   },
 
   // Empty State
