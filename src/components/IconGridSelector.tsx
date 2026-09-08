@@ -199,10 +199,20 @@ export default function IconGridSelector({
 
     if (isCircle) {
       // Circular Card: Circle container with label placed below the circle
+      const isGrid = layout === 'grid';
+      const circleItemWidth = isGrid ? (`${Math.floor(100 / columns)}%` as any) : undefined;
+
       return (
         <TouchableOpacity
           key={item.value}
-          style={styles.circleItemWrapper}
+          style={[
+            styles.circleItemWrapper,
+            isGrid && {
+              width: circleItemWidth,
+              marginRight: 0,
+              marginBottom: 16,
+            },
+          ]}
           onPress={() => handleSelectOption(item)}
           activeOpacity={0.7}
           accessibilityRole="radio"
@@ -284,7 +294,7 @@ export default function IconGridSelector({
           {options.map(renderOptionCard)}
         </ScrollView>
       ) : (
-        <View style={styles.gridContainer}>
+        <View style={cardShape === 'circle' ? styles.circleGridContainer : styles.gridContainer}>
           {options.map(renderOptionCard)}
         </View>
       )}
@@ -325,12 +335,20 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
 
-  // Grid layout container
+  // Grid layout container (for square cards with gap)
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
     justifyContent: 'flex-start',
+  },
+
+  // Circle Grid layout container (for circular cards wrapping neatly by percentage)
+  circleGridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    marginTop: 4,
   },
 
   // Row layout container (horizontal scroll)

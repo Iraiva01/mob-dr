@@ -40,6 +40,20 @@ import { CustomerStackParamList } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../config/supabase';
 import IconGridSelector, { IconGridOption } from '../../components/IconGridSelector';
+import {
+  SamsungLogo,
+  AppleLogo,
+  XiaomiLogo,
+  VivoLogo,
+  OppoLogo,
+  RealmeLogo,
+  OnePlusLogo,
+  MotorolaLogo,
+  NothingLogo,
+  GoogleLogo,
+  PocoLogo,
+  OtherBrandLogo,
+} from '../../components/BrandLogos';
 import { uploadRepairPhoto } from '../../utils/storage';
 
 type NewRequestNavProp = NativeStackNavigationProp<CustomerStackParamList, 'NewRequest'>;
@@ -49,13 +63,20 @@ interface SelectedPhoto {
   base64: string;
 }
 
-// Brand options (circular row per design.md)
+// Brand options (Full India smartphone brands list with official vector logomarks)
 const BRAND_OPTIONS: IconGridOption[] = [
-  { value: 'Apple', label: 'Apple', icon: 'logo-apple' },
-  { value: 'Samsung', label: 'Samsung', icon: 'phone-portrait-outline' },
-  { value: 'OnePlus', label: 'OnePlus', icon: 'hardware-chip-outline' },
-  { value: 'Xiaomi', label: 'Xiaomi', icon: 'tablet-portrait-outline' },
-  { value: 'other', label: 'Other', icon: 'ellipsis-horizontal-outline' },
+  { value: 'Samsung', label: 'Samsung', icon: SamsungLogo },
+  { value: 'Apple', label: 'Apple', icon: AppleLogo },
+  { value: 'Xiaomi', label: 'Xiaomi', icon: XiaomiLogo },
+  { value: 'Vivo', label: 'Vivo', icon: VivoLogo },
+  { value: 'Oppo', label: 'Oppo', icon: OppoLogo },
+  { value: 'Realme', label: 'Realme', icon: RealmeLogo },
+  { value: 'OnePlus', label: 'OnePlus', icon: OnePlusLogo },
+  { value: 'Motorola', label: 'Motorola', icon: MotorolaLogo },
+  { value: 'Nothing', label: 'Nothing', icon: NothingLogo },
+  { value: 'Google', label: 'Google', icon: GoogleLogo },
+  { value: 'Poco', label: 'Poco', icon: PocoLogo },
+  { value: 'other', label: 'Other', icon: OtherBrandLogo, isOther: true },
 ];
 
 // Problem type options (square cards, 2-column grid per design.md)
@@ -285,9 +306,10 @@ export default function NewRequestScreen() {
               onSelect={setSelectedBrand}
               otherValue={customBrand}
               onOtherChange={setCustomBrand}
-              otherPlaceholder="e.g. Motorola, Google Pixel"
+              otherPlaceholder="e.g. Asus, Sony, Tecno, Infinix"
               otherLabel="Custom Brand"
-              layout="row"
+              layout="grid"
+              columns={4}
               cardShape="circle"
               selectedStyle="fill"
             />
