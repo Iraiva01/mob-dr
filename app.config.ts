@@ -21,11 +21,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'com.mobdr.app',
+    bundleIdentifier: 'com.mobdr.mobileapp',
   },
 
   android: {
-    package: 'com.mobdr.app',
+    package: 'com.mobdr.mobileapp',
     adaptiveIcon: {
       backgroundColor: '#FFFFFF',
       foregroundImage: './assets/android-icon-foreground.png',
