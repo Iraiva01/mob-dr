@@ -1,87 +1,69 @@
-# Project Context: Phone Repair Shop App
+# Project Context: Phone Repair Shop App (Mob Dr)
 
-## 1. Background
+## 1. Background & Mission
 
-The client runs a phone repair shop that provides **home repair services** — instead of customers bringing devices into a store, the shop owner travels to the customer's location to perform repairs. There are no additional technicians; the shop owner is the sole operator handling every request personally.
+The client operates an on-demand phone repair business called **Mob Dr** that provides **home repair services** (doorstep device repair). Instead of customers bringing their broken phones to a physical retail store, the shop owner travels directly to the customer's house, office, or designated location to perform the repair on-site.
 
-The goal is to build a mobile application that connects customers with the shop owner: customers submit repair requests describing their device issue, and the shop owner reviews, accepts or rejects, and manages those requests along with his business's revenue and history.
-
-This project is being built by Rahul, who learns primarily through hands-on development. Development is happening in Google Antigravity ADE, with an AI coding agent assisting throughout.
+Key operational realities:
+- **Sole Operator**: There is no technician team or multi-tier dispatch system. The shop owner handles triage, scheduling, travel, physical repair, customer interaction, and revenue collection personally.
+- **Hands-On Developer**: Built by Rahul in Google Antigravity ADE with pair programming from an AI coding assistant.
+- **Target Audience**: Mobile users in India looking for fast, friction-free doorstep repairs without visiting crowded repair markets.
 
 ---
 
 ## 2. Key Decisions & Rationale
 
-### Single app, not two
-Initially, a separate web dashboard was considered for the shop owner (better suited to desktop-style workloads like managing multiple requests and viewing stats). However, **the client explicitly prefers a single Android app** for both customers and the shop owner, with role-based views after login. This trade-off was made consciously — a mobile interface for the shop owner's dashboard is less ideal than a web dashboard would be, but it matches the client's stated preference for simplicity and a single point of access.
+### Single Cross-Platform App (Two Roles in One Binary)
+* **Decision**: A single React Native (Expo) application serving both Customers and the Shop Owner, dynamically mounting role-specific navigation stacks after authentication.
+* **Rationale**: Initially, a desktop web dashboard was considered for the shop owner's management duties. However, the client explicitly preferred a single mobile app because the shop owner is constantly on the move traveling to repair sites. Having everything on his phone provides maximum portability. Building a single app also eliminates the overhead of maintaining separate web and mobile repositories.
 
-### Android first, iOS later
-The client wants to launch on Android only initially, then expand to iOS using the same codebase. This is why React Native (not native Android/Kotlin) was chosen — it avoids re-architecting when iOS support is added later.
+### Android First, iOS Ready
+* **Decision**: Launch on Android first, with iOS release scheduled for a later milestone using the exact same codebase.
+* **Rationale**: Android represents the vast majority of the target demographic in the initial market. By utilizing React Native and Expo while avoiding platform-specific native dependencies, cross-platform portability to iOS is preserved without refactoring.
 
-### Cost-conscious architecture
-The client wants development and hosting costs kept as low as possible. Instead of a traditional Node.js/Express server (which requires paid hosting even when idle), the project uses **Supabase Edge Functions** (serverless) alongside Supabase's Postgres database, Auth, and Storage — all under one platform, most of it free at this project's expected scale. This keeps monthly costs close to $0 until the app has meaningful production traffic.
+### Serverless, Cost-Optimized Backend (Supabase Free Tier)
+* **Decision**: Rely entirely on Supabase (PostgreSQL, Supabase Auth, Supabase Storage, and Supabase Edge Functions) instead of spinning up dedicated server instances (Node.js/Express, Docker, AWS EC2).
+* **Rationale**: The business prioritizes keeping monthly hosting overhead at $0 until production traffic justifies scaling. Supabase's generous free tier provides managed database hosting, authentication, storage, and serverless compute under a single umbrella.
 
-### Visual-first UI, minimal text
-The client was clear that the app should minimize typing wherever possible. Instead of text dropdowns for device brand or problem type, the customer selects from **icon grids** (brand logos, problem-type icons). An "Other" option with a text field is the fallback for anything not covered by icons. This was a deliberate simplicity trade-off: faster for customers to use, at the cost of slightly more upfront design work (icon sets).
+### Visual-First UI with Minimal Typing
+* **Decision**: Replace standard dropdowns and open-ended text fields with clean, icon-driven grid selectors (`IconGridSelector`). An "Other" option with a conditional text field serves as an intuitive fallback.
+* **Rationale**: Customers reporting phone issues on a cracked or malfunctioning screen find typing tedious and prone to error. Tapping visually familiar brand logos and problem category icons streamlines request submission to under 60 seconds.
 
-### Uber-inspired black & white design
-The client specifically referenced Uber's app as a design reference — clean, minimal, black-and-white palette. This was chosen over glassmorphic or bold/colorful alternatives to keep the interface fast to scan and easy for a non-technical shop owner to use.
+### 12 Indian Smartphone Brands Grid
+* **Decision**: Expand brand selection to 12 popular smartphone brands in the Indian market: **Samsung, Apple, Xiaomi, Vivo, Oppo, Realme, OnePlus, Motorola, Nothing, Google, Poco, and Other**.
+* **Rationale**: The Indian smartphone landscape features significant market share for brands like Realme, Vivo, Poco, and Nothing. Using vector outline representations maintains the sleek black-and-white aesthetic while maximizing recognition for local users.
 
-### Scope discipline
-Several features were deliberately **deferred rather than skipped due to limitation** — the client chose to leave them out of the first version to keep the build simple and shippable:
-- No in-app chat/messaging between customer and shop owner.
-- No repair cost estimates shown to customers before acceptance.
-- No scheduling/calendar system.
-- No multi-technician support (single shop owner only).
-- Revenue tracking is a single total amount per repair, not broken into labor/parts.
+### Uber-Inspired Minimalist Black & White Design
+* **Decision**: Pure white background (`#FFFFFF`), solid black accents and primary buttons (`#000000`), gray secondary text (`#666666` and `#999999`), and no heavy borders. Subtle elevation shadows and rounded status pills give a modern, premium appearance.
+* **Rationale**: The client explicitly referenced Uber's user experience. A high-contrast, uncluttered interface allows both customers and the busy shop owner to digest critical information instantly.
 
-These may be revisited in a future version but should not be built now unless explicitly requested.
+### Dedicated 'Pending' vs 'In Progress' Tabs for Shop Owner
+* **Decision**: Organize the shop owner's incoming request screen into two distinct tabs:
+  - **Pending**: New submissions awaiting triage (Accept / Reject).
+  - **In Progress**: Accepted requests currently being fulfilled, preventing active jobs from disappearing from view.
+* **Rationale**: In earlier iterations, accepting a request removed it from the incoming list, leaving the shop owner with no clear screen to locate accepted customer jobs, initiate calls, or complete repairs. The two-tab layout keeps active doorstep jobs immediately accessible.
 
----
-
-## 3. Tech Stack Summary
-
-| Layer | Choice |
-|---|---|
-| Mobile Frontend | React Native (Expo), Android first |
-| Backend | Supabase Edge Functions (serverless) |
-| Database | PostgreSQL via Supabase |
-| Auth | Supabase Auth |
-| File Storage | Supabase Storage (repair photos) |
-| Distribution | Google Play Store |
-| Design Tooling | Google Stitch (for generating screen mockups from text prompts, see `design.md`) |
-| Dev Environment | Google Antigravity ADE |
+### In-App Completion & Revenue Tracking (₹)
+* **Decision**: When the shop owner finishes a repair, they trigger a "Complete Repair" modal directly from the request detail screen, entering the total amount charged in Indian Rupees (₹) and optional notes.
+* **Rationale**: This action invokes the `complete-repair-request` Edge Function, moving the request to `completed` and creating an entry in the `completed_repairs` table. The `OwnerDashboardScreen` and `get-revenue-stats` Edge Function immediately incorporate this data into This Month, Last Month, and All Time revenue metrics and bar charts.
 
 ---
 
-## 4. User Roles
+## 3. Explicit Non-Goals (Scope Discipline)
 
-- **Customer**: Submits repair requests (brand, device name, problem type, photos, optional notes), tracks status of one or more requests, receives acknowledgment when accepted.
-- **Shop Owner**: Reviews incoming requests, accepts or rejects them, views repair history, and tracks total revenue over different time periods (this month, last month, all time).
-
----
-
-## 5. Database Schema (Summary)
-
-- `users` — id, email, password (via Supabase Auth), phone_number, role (`customer` | `shop_owner`), created_at
-- `repair_requests` — id, customer_id, brand, device_name, problem_type, additional_notes, status (`pending` | `accepted` | `rejected` | `completed`), created_at, updated_at
-- `repair_photos` — id, repair_request_id, photo_url, uploaded_at
-- `completed_repairs` — id, repair_request_id, completion_date, amount_charged, notes
-
-Full field-level detail lives in `AGENTS.md`.
+The following features were **intentionally excluded** from this phase to guarantee a rapid, stable launch:
+1. **No In-App Chat / Messaging**: Communication is handled via phone calls using device dialers (`tel:...`).
+2. **No Pre-Acceptance Price Estimates**: Device damage varies widely; prices are agreed upon after inspection or phone triage.
+3. **No Calendar Scheduling**: The owner contacts the customer directly upon acceptance to coordinate the visit.
+4. **No Multiple Staff Accounts**: The business is operated solely by the shop owner.
+5. **No Parts vs. Labor Breakdown**: Only total revenue per repair is recorded to keep accounting frictionless.
+6. **No Separate Web Admin Dashboard**: Everything is managed inside the Android app.
 
 ---
 
-## 6. Related Files in This Project
+## 4. Current Milestone Status
 
-- **`AGENTS.md`** — technical context and instructions specifically for AI coding agents (tech stack, schema, feature list, non-goals, coding conventions).
-- **`design.md`** — full set of Google Stitch design prompts for every screen (auth, customer side, shop owner side), written in the finalized black-and-white Uber-inspired style.
-- **`Project_Context.md`** (this file) — the narrative background, decisions, and rationale behind the project, for anyone (human or AI) who needs to understand *why* the project is shaped the way it is, not just *what* to build.
-
----
-
-## 7. Current Status
-
-- Architecture, tech stack, database schema, feature set, and design language are all finalized.
-- Design mockup prompts have been written for client review via Google Stitch.
-- Development is about to begin in Google Antigravity ADE, starting with Android.
+- **Frontend**: Fully implemented in React Native / Expo (TypeScript). All screens for Auth, Customer, and Shop Owner are operational.
+- **Backend & Database**: PostgreSQL schema, RLS policies, storage bucket policies, and database triggers deployed.
+- **Edge Functions**: All 5 serverless functions implemented with role verification and graceful fallbacks.
+- **Build Infrastructure**: Build scripts configured for Gradle 9.3.1 and Android Gradle Plugin 8.12.0 using clean Groovy DSL property assignment syntax.

@@ -2,17 +2,23 @@
 # Mob Dr — Git Ignore Configuration
 # =============================================================================
 
-# Dependencies
+# Dependencies & Package Managers
 node_modules/
-package-lock.json.log
 .pnpm-store/
+package-lock.json.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
 # Expo & Metro Bundler
 .expo/
+.expo-shared/
 dist/
 web-build/
 expo-env.d.ts
 .metro-health-check*
+*.jsbundle
 
 # Environment & Secrets (NEVER COMMIT SENSITIVE KEYS)
 .env
@@ -21,13 +27,36 @@ expo-env.d.ts
 *.env
 *.env.local
 
-# Native Build Artifacts & Generated Folders
-/android
-/ios
-.kotlin/
-*.orig.*
+# JVM Crash Logs & Java Dumps
+hs_err_pid*
+replay_pid*
+*.hprof
+*.log
 
-# Android / iOS Keystores, Signing Keys, Certificates
+# Native Android Build Artifacts, Caches & Machine Configuration
+/android
+.gradle/
+android/.gradle/
+android/build/
+android/app/build/
+android/app/.cxx/
+android/.kotlin/
+android/.idea/
+android/local.properties
+local.properties
+*.iml
+*.ipr
+*.iws
+
+# Native iOS Build Artifacts & CocoaPods (for future iOS release)
+/ios
+ios/Pods/
+ios/build/
+ios/*.xcworkspace/
+ios/*.xcodeproj/project.xcworkspace/
+ios/*.xcodeproj/xcuserdata/
+
+# Keystores, Signing Keys & Certificates (CRITICAL SECURITY)
 *.jks
 *.keystore
 *.p8
@@ -38,14 +67,7 @@ expo-env.d.ts
 *.cer
 *.crt
 
-# Debug Logs & Diagnostic Reports
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-*.log
-
-# TypeScript
+# TypeScript Build Info
 *.tsbuildinfo
 
 # Editor & IDE Directories
@@ -68,9 +90,11 @@ ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# Supabase Local State & Temp Files
+# Supabase Local State & Temporary Scratch Files
 .supabase/
-*.tmp
 temp/
-dist_test/
+tmp/
 scratch/
+dist_test/
+*.tmp
+*.bak
